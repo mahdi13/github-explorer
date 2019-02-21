@@ -1,9 +1,13 @@
 package com.perfect.githubexplorer.data
 
+import androidx.room.Entity
+
+@Entity
 data class User(
-    val username: String
+    val id: Int
 )
 
+@Entity
 data class Repository(
-    val name: String
+    val id: Int
 )
