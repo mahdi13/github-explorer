@@ -31,6 +31,11 @@ interface GithubApiInterface {
         @Path("username") username: String
     ): Deferred<ArrayList<User>>
 
+    @GET("repositories/{id}")
+    fun repositoryDetail(
+        @Path("id") id: Int
+    ): Deferred<Repository>
+
 }
 
 var apiClient = Retrofit.Builder()

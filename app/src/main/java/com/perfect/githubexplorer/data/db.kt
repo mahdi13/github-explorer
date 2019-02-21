@@ -6,6 +6,7 @@ import androidx.room.OnConflictStrategy.REPLACE
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 @Database(
     entities = [
@@ -25,9 +26,23 @@ object GithubRepository {
     private val repositoryDao = githubDatabase.repositoryDao
     private val userDao = githubDatabase.userDao
 
-    private var job: Job? = null
     private val scope = CoroutineScope(Dispatchers.Default)
 
+    fun loadUser(username: String): LiveData<User> {
+        scope.launch { userDao.update(apiClient.userProfile(username).await()) }
+        return userDao.load(username)
+    }
+
+    fun loadRepository(id: Int): LiveData<Repository> {
+        scope.launch { repositoryDao.update(apiClient.repositoryDetail(id).await()) }
+        return repositoryDao.load(id)
+    }
+
+    fun searchRepository(query: String, page: Int = 0): LiveData<ArrayList<Repository>> {
+        scope.run {
+            repositoryDao.update(apiClient.serachRepositories().await())
+        }
+    }
 }
 
 @Dao
@@ -56,8 +71,8 @@ interface UserDao {
     @Update(onConflict = REPLACE)
     fun update(user: User)
 
-    @Query("SELECT * FROM User WHERE id = :id")
-    fun load(id: Int): LiveData<User>
+    @Query("SELECT * FROM User WHERE username = :username")
+    fun load(username: String): LiveData<User>
 
     @Query("SELECT * FROM User")
     fun loadAll(): LiveData<List<User>>
