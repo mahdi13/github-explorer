@@ -1,6 +1,7 @@
 package com.perfect.githubexplorer.data
 
 import androidx.lifecycle.LiveData
+import androidx.paging.DataSource
 import androidx.room.*
 import androidx.room.OnConflictStrategy.REPLACE
 import kotlinx.coroutines.CoroutineScope
@@ -38,11 +39,11 @@ object GithubRepository {
         return repositoryDao.load(id)
     }
 
-    fun searchRepository(query: String, page: Int = 0): LiveData<ArrayList<Repository>> {
-        scope.run {
-            repositoryDao.update(apiClient.serachRepositories().await())
-        }
-    }
+//    fun searchRepository(query: String, page: Int = 0): LiveData<ArrayList<Repository>> {
+//        scope.run {
+//            repositoryDao.update(apiClient.serachRepositories().await())
+//        }
+//    }
 }
 
 @Dao
@@ -55,6 +56,9 @@ interface RepositoryDao {
 
     @Query("SELECT * FROM Repository WHERE id = :id")
     fun load(id: Int): LiveData<Repository>
+
+    @Query("SELECT * FROM Repository")
+    fun loadPaging(): DataSource.Factory<Int, Repository>
 
     @Query("SELECT * FROM Repository")
     fun loadAll(): LiveData<List<Repository>>

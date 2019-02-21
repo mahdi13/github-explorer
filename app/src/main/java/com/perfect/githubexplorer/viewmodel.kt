@@ -4,9 +4,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
-import com.perfect.githubexplorer.data.GithubRepository
-import com.perfect.githubexplorer.data.Repository
-import com.perfect.githubexplorer.data.User
+import androidx.paging.LivePagedListBuilder
+import androidx.paging.PagedList
+import com.perfect.githubexplorer.data.*
 
 class ProfileViewModel : ViewModel() {
     val username: MutableLiveData<String?> = MutableLiveData()
@@ -27,12 +27,12 @@ class RepositoryViewModel : ViewModel() {
     }
 }
 
-class SearchViewModel : ViewModel() {
+class SearchViewModel(val repositoryDao: RepositoryDao) : ViewModel() {
     val query: MutableLiveData<String?> = MutableLiveData()
     val page: MutableLiveData<Int?> = MutableLiveData()
-    val repositories: LiveData<Repository?> = Transformations.switchMap(query) {
-        val query = if (it != null) it else null
-        GithubRepository.searchRepository(query = query, page = page) else null
+    val repositories: LiveData<PagedList<Repository>> = Transformations.switchMap(query) {
+        repositoryDao.deleteAll()
+        LivePagedListBuilder(repositoryDao.loadPaging(), DEFAULT_PAGE_SIZE).build()
     }
 
 }
