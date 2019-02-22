@@ -6,6 +6,7 @@ import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList
+import androidx.paging.toLiveData
 import com.perfect.githubexplorer.data.*
 
 class ProfileViewModel : ViewModel() {
@@ -27,12 +28,35 @@ class RepositoryViewModel : ViewModel() {
     }
 }
 
-class SearchViewModel(val repositoryDao: RepositoryDao) : ViewModel() {
+class SearchViewModel : ViewModel() {
     val query: MutableLiveData<String?> = MutableLiveData()
-    val page: MutableLiveData<Int?> = MutableLiveData()
-    val repositories: LiveData<PagedList<Repository>> = Transformations.switchMap(query) {
-        repositoryDao.deleteAll()
-        LivePagedListBuilder(repositoryDao.loadPaging(), DEFAULT_PAGE_SIZE).build()
+    val networkState: MutableLiveData<NetworkState> = MutableLiveData()
+    val repositories: LiveData<PagedList<Repository>> = Transformations.switchMap(query) { query ->
+
+        val sourceFactory = RepoistoryDataSourceFactory(query ?: "")
+
+        sourceFactory.toLiveData(pageSize = DEFAULT_PAGE_SIZE)
+
+//        val livePagedList = sourceFactory.toLiveData(pageSize = DEFAULT_PAGE_SIZE)
+//
+//        val refreshState = Transformations.switchMap(sourceFactory.sourceLiveData) {
+//            it.initialLoad
+//        }
+//        Listing(
+//            pagedList = livePagedList,
+//            networkState = Transformations.switchMap(sourceFactory.sourceLiveData) {
+//                it.networkState
+//            },
+//            retry = {
+//                sourceFactory.sourceLiveData.value?.retryAllFailed()
+//            },
+//            refresh = {
+//                sourceFactory.sourceLiveData.value?.invalidate()
+//            },
+//            refreshState = refreshState
+//        )
+//
+//        LivePagedListBuilder(repositoryDao.loadPaging(), DEFAULT_PAGE_SIZE).build()
     }
 
 }

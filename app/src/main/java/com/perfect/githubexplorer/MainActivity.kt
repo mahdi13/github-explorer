@@ -1,13 +1,24 @@
 package com.perfect.githubexplorer
 
-import androidx.appcompat.app.AppCompatActivity
+import android.app.SearchManager
+import android.content.Context
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.paging.PagedList
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.perfect.githubexplorer.adapter.RepositoryAdapter
 import com.perfect.githubexplorer.data.Repository
 import kotlinx.android.synthetic.main.activity_main.*
+import android.widget.AutoCompleteTextView
+import androidx.appcompat.widget.SearchView
+import com.bumptech.glide.Glide
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -19,12 +30,60 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         viewModel = ViewModelProviders.of(this).get(SearchViewModel::class.java)
 
-        adapter = RepositoryAdapter()
-        viewModel.repositories.observe(
-            this,
-            Observer<PagedList<Repository>> { pagedList -> adapter.submitList(pagedList) }
-        )
-        list.adapter = adapter
+        setSupportActionBar(toolbar)
+        toolbar.title = title
+
+        initAdapter()
 
     }
+
+    private fun initAdapter() {
+        val glide = Glide.with(this)
+        val adapter = RepositoryAdapter(glide) {
+            //            viewModel.retry()
+        }
+        list.adapter = adapter
+        viewModel.repositories.observe(this, Observer<PagedList<Repository>> {
+            adapter.submitList(it)
+        })
+        viewModel.networkState.observe(this, Observer {
+            adapter.setNetworkState(it)
+        })
+        list.layoutManager = LinearLayoutManager(this)
+    }
+
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_main, menu)
+        setupSearchView(menu.findItem(R.id.search))
+        return true
+    }
+
+    private fun setupSearchView(searchMenuItem: MenuItem) {
+        val searchView = searchMenuItem.actionView as SearchView
+        searchView.queryHint = getString(R.string.search_title) // your hint here
+
+        try {
+            val autoCompleteTextViewID = resources.getIdentifier("android:id/search_src_text", null, null)
+            val searchAutoCompleteTextView =
+                searchView.findViewById<View>(autoCompleteTextViewID) as AutoCompleteTextView
+            searchAutoCompleteTextView.threshold = 1
+        } catch (e: Exception) {
+        }
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                viewModel.query.postValue(newText)
+                return true
+            }
+
+        })
+
+    }
+
+
 }

@@ -1,5 +1,6 @@
 package com.perfect.githubexplorer.data
 
+import com.google.gson.annotations.SerializedName
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import kotlinx.coroutines.Deferred
 import retrofit2.Retrofit
@@ -15,11 +16,11 @@ const val DEFAULT_PAGE_SIZE = 1
 interface GithubApiInterface {
 
     @GET("search/repositories")
-    fun serachRepositories(
+    fun searchRepositories(
         @Query("q") query: String,
         @Query("page") page: Int,
         @Query("per_page") pageSize: Int = DEFAULT_PAGE_SIZE
-    ): Deferred<ArrayList<Repository>>
+    ): Deferred<SearchRepositoryResponse>
 
     @GET("users/{username}")
     fun userProfile(
@@ -36,6 +37,30 @@ interface GithubApiInterface {
         @Path("id") id: Int
     ): Deferred<Repository>
 
+}
+
+data class SearchRepositoryResponse(
+    @SerializedName("items") val items: List<Repository>,
+    @SerializedName("total_count") val totalCount: Int,
+    @SerializedName("incomplete_results") val incompleteResults: Boolean
+)
+
+enum class NetworkStatus {
+    RUNNING,
+    SUCCESS,
+    FAILED
+}
+
+@Suppress("DataClassPrivateConstructor")
+data class NetworkState private constructor(
+    val status: NetworkStatus,
+    val msg: String? = null
+) {
+    companion object {
+        val LOADED = NetworkState(NetworkStatus.SUCCESS)
+        val LOADING = NetworkState(NetworkStatus.RUNNING)
+        fun error(msg: String?) = NetworkState(NetworkStatus.FAILED, msg)
+    }
 }
 
 var apiClient = Retrofit.Builder()

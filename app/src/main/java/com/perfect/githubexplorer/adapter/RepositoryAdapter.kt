@@ -9,19 +9,22 @@ import android.widget.TextView
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.RequestManager
 import com.perfect.githubexplorer.R
+import com.perfect.githubexplorer.data.NetworkState
 import com.perfect.githubexplorer.data.Repository
+import kotlinx.android.synthetic.main.repository_row.view.*
 
-class RepositoryAdapter : PagedListAdapter<Repository, RepositoryAdapter.ViewHolder>(DIFF_CALLBACK) {
+class RepositoryAdapter(private val glide: RequestManager, private val retryCallback: () -> Unit) :
+    PagedListAdapter<Repository, RepositoryAdapter.ViewHolder>(POST_COMPARATOR) {
+
+    private var networkState: NetworkState? = null
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val repository = getItem(position)
         if (repository != null) {
             holder.bindTo(repository)
         } else {
-            // Null defines a placeholder item - PagedListAdapter automatically
-            // invalidates this row when the actual object is loaded from the
-            // database.
             holder.clear()
         }
     }
@@ -36,37 +39,55 @@ class RepositoryAdapter : PagedListAdapter<Repository, RepositoryAdapter.ViewHol
     }
 
 
-    inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
-//        val amountView: TextView = view.amount
-//        val priceView: TextView = view.price
-//        val changeView: TextView = view.change
+    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val nameView: TextView = view.name
+        val userView: TextView = view.user
+        val starView: TextView = view.stars
 
         fun bindTo(repository: Repository) {
-            // TODO
+            nameView.text = repository.fullName
+            userView.text = repository.owner.username
+            starView.text = repository.owner.username
         }
 
         fun clear() {
-            // TODO
+            nameView.text = ""
+            userView.text = ""
+            starView.text = ""
+        }
+    }
+
+    override fun getItemCount(): Int = super.getItemCount() + if (hasExtraRow()) 1 else 0
+
+
+    private fun hasExtraRow() = networkState != null && networkState != NetworkState.LOADED
+
+    fun setNetworkState(newNetworkState: NetworkState?) {
+        val previousState = this.networkState
+        val hadExtraRow = hasExtraRow()
+        this.networkState = newNetworkState
+        val hasExtraRow = hasExtraRow()
+        if (hadExtraRow != hasExtraRow) {
+            if (hadExtraRow) {
+                notifyItemRemoved(super.getItemCount())
+            } else {
+                notifyItemInserted(super.getItemCount())
+            }
+        } else if (hasExtraRow && previousState != newNetworkState) {
+            notifyItemChanged(itemCount - 1)
         }
     }
 
     companion object {
-        private val DIFF_CALLBACK = object :
-            DiffUtil.ItemCallback<Repository>() {
-            // Concert details may have changed if reloaded from the database,
-            // but ID is fixed.
-            override fun areItemsTheSame(
-                oldRepository: Repository,
-                newRepository: Repository
-            ): Boolean =
-                oldRepository.id == newRepository.id
+        val POST_COMPARATOR = object : DiffUtil.ItemCallback<Repository>() {
+            override fun areContentsTheSame(oldItem: Repository, newItem: Repository): Boolean =
+                oldItem == newItem
 
-            override fun areContentsTheSame(
-                oldRepository: Repository,
-                newRepository: Repository
-            ): Boolean =
-                oldRepository == newRepository
+            override fun areItemsTheSame(oldItem: Repository, newItem: Repository): Boolean =
+                oldItem.id == newItem.id
+
         }
+
     }
 
 }

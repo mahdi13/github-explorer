@@ -41,7 +41,7 @@ object GithubRepository {
 
 //    fun searchRepository(query: String, page: Int = 0): LiveData<ArrayList<Repository>> {
 //        scope.run {
-//            repositoryDao.update(apiClient.serachRepositories().await())
+//            repositoryDao.update(apiClient.searchRepositories().await())
 //        }
 //    }
 }

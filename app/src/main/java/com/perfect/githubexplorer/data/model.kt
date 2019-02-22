@@ -1,7 +1,9 @@
 package com.perfect.githubexplorer.data
 
+import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.google.gson.annotations.SerializedName
 
 @Entity
 data class User(
@@ -11,5 +13,12 @@ data class User(
 
 @Entity
 data class Repository(
-    @PrimaryKey val id: Int
+    @PrimaryKey val id: Int,
+    @SerializedName("full_name") val fullName: String,
+    @SerializedName("stargazers_count") val stars: Int,
+    @Embedded val owner: RepositoryOwner
+)
+
+data class RepositoryOwner(
+    @SerializedName("login") val username: String
 )
