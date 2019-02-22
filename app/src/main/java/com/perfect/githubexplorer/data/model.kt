@@ -20,5 +20,6 @@ data class Repository(
 )
 
 data class RepositoryOwner(
-    @SerializedName("login") val username: String
+    @SerializedName("login") val username: String,
+    @SerializedName("avatar_url") val avatarUrl: String
 )

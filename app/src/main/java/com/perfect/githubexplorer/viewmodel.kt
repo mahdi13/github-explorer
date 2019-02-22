@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
-import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList
 import androidx.paging.toLiveData
 import com.perfect.githubexplorer.data.*
@@ -33,7 +32,7 @@ class SearchViewModel : ViewModel() {
     val networkState: MutableLiveData<NetworkState> = MutableLiveData()
     val repositories: LiveData<PagedList<Repository>> = Transformations.switchMap(query) { query ->
 
-        val sourceFactory = RepoistoryDataSourceFactory(query ?: "")
+        val sourceFactory = RepositoryDataSourceFactory(query ?: "")
 
         sourceFactory.toLiveData(pageSize = DEFAULT_PAGE_SIZE)
 

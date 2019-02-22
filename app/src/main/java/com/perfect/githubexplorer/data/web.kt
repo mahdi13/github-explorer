@@ -10,7 +10,7 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 const val GITHUB_BASE_API_URL = "https://api.github.com"
-const val DEFAULT_PAGE_SIZE = 1
+const val DEFAULT_PAGE_SIZE = 20
 
 @Suppress("DeferredIsResult")
 interface GithubApiInterface {

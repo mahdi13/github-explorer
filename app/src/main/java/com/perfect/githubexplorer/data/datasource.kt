@@ -8,7 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.lang.Exception
 
-class RepoistoryDataSourceFactory(private val query: String) : DataSource.Factory<Int, Repository>() {
+class RepositoryDataSourceFactory(private val query: String) : DataSource.Factory<Int, Repository>() {
 
     val sourceLiveData = MutableLiveData<RepositoryDataSource>()
 

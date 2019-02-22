@@ -10,10 +10,26 @@ import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.RequestManager
+import com.perfect.githubexplorer.MainActivity
 import com.perfect.githubexplorer.R
 import com.perfect.githubexplorer.data.NetworkState
 import com.perfect.githubexplorer.data.Repository
 import kotlinx.android.synthetic.main.repository_row.view.*
+import org.jetbrains.anko.startActivity
+import android.os.Build
+import android.graphics.drawable.Drawable
+import androidx.transition.Transition
+import com.bumptech.glide.request.target.SimpleTarget
+import com.bumptech.glide.request.RequestOptions.bitmapTransform
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
+import com.google.android.material.chip.Chip
+import kotlinx.coroutines.*
+import okhttp3.Dispatcher
+
 
 class RepositoryAdapter(private val glide: RequestManager, private val retryCallback: () -> Unit) :
     PagedListAdapter<Repository, RepositoryAdapter.ViewHolder>(POST_COMPARATOR) {
@@ -39,15 +55,97 @@ class RepositoryAdapter(private val glide: RequestManager, private val retryCall
     }
 
 
-    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val nameView: TextView = view.name
-        val userView: TextView = view.user
-        val starView: TextView = view.stars
+    inner class ViewHolder(private val containerView: View) : RecyclerView.ViewHolder(containerView) {
+        private val nameView: TextView = containerView.name
+        private val userView: Chip = containerView.user
+        private val starView: TextView = containerView.stars
+        private var imageLoaderTarget: Target<Drawable>? = null
+
+        init {
+            containerView.setOnClickListener {
+                it.context.startActivity<MainActivity>(
+                    "id" to (it.tag as String)
+                )
+            }
+
+            userView.setOnClickListener {
+                it.context.startActivity<MainActivity>(
+                    "username" to (it.tag as String)
+                )
+            }
+        }
 
         fun bindTo(repository: Repository) {
             nameView.text = repository.fullName
             userView.text = repository.owner.username
             starView.text = repository.owner.username
+
+            containerView.tag = repository.id
+            userView.tag = repository.owner.username
+
+            userView.chipIcon = null
+
+            glide.clear(imageLoaderTarget)
+            imageLoaderTarget = glide.load(repository.owner.avatarUrl)
+                .into(object : SimpleTarget<Drawable>() {
+                    override fun onResourceReady(
+                        resource: Drawable,
+                        transition: com.bumptech.glide.request.transition.Transition<in Drawable>?
+                    ) {
+                        userView.chipIcon = resource
+                    }
+
+                })
+
+
+//            glide.asDrawable().load(repository.owner.avatarUrl)..listener(object : RequestListener<Drawable> {
+//                override fun onLoadFailed(
+//                    e: GlideException?,
+//                    model: Any?,
+//                    target: Target<Drawable>?,
+//                    isFirstResource: Boolean
+//                ): Boolean {
+//                    return true
+//                }
+//
+//                override fun onResourceReady(
+//                    resource: Drawable?,
+//                    model: Any?,
+//                    target: Target<Drawable>?,
+//                    dataSource: DataSource?,
+//                    isFirstResource: Boolean
+//                ): Boolean {
+//                    userView.chipIcon = resource
+//                    return true
+//                }
+//
+//            })
+
+//            imageLoader = GlobalScope.launch(Dispatchers.IO) {
+//                if (imageLoader != null && imageLoader!!.isActive) imageLoader!!.cancelAndJoin()
+//                val d = glide.asDrawable().load(repository.owner.avatarUrl).listener(object: RequestListener<Drawable>{
+//                    override fun onLoadFailed(
+//                        e: GlideException?,
+//                        model: Any?,
+//                        target: Target<Drawable>?,
+//                        isFirstResource: Boolean
+//                    ): Boolean {
+//                        return true
+//                    }
+//
+//                    override fun onResourceReady(
+//                        resource: Drawable?,
+//                        model: Any?,
+//                        target: Target<Drawable>?,
+//                        dataSource: DataSource?,
+//                        isFirstResource: Boolean
+//                    ): Boolean {
+//                       return true
+//                    }
+//
+//                })
+//                GlobalScope.launch(Dispatchers.Main) { userView.chipIcon = d }
+//        }
         }
 
         fun clear() {
