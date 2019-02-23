@@ -14,10 +14,11 @@ import kotlinx.android.synthetic.main.repository_row.view.*
 import com.perfect.githubexplorer.data.User
 import kotlinx.android.synthetic.main.user_data_row.view.*
 
-val SHOWING_DATA_COUNT = 4
 
 class ProfileAdapter(val user: User, private val retryCallback: () -> Unit) :
     PagedListAdapter<Repository, RecyclerView.ViewHolder>(POST_COMPARATOR) {
+
+    private val showingDataCount = 4
 
     private var networkState: NetworkState? = null
 
@@ -37,7 +38,7 @@ class ProfileAdapter(val user: User, private val retryCallback: () -> Unit) :
             }
             else -> {
                 holder as RepositoryViewHolder
-                val repository = getItem(position - SHOWING_DATA_COUNT)
+                val repository = getItem(position - showingDataCount)
                 if (repository != null) {
                     holder.bindTo(repository)
                 } else {
@@ -48,7 +49,7 @@ class ProfileAdapter(val user: User, private val retryCallback: () -> Unit) :
 
     }
 
-    override fun getItemViewType(position: Int): Int = if (position < SHOWING_DATA_COUNT) 0 else 1
+    override fun getItemViewType(position: Int): Int = if (position < showingDataCount) 0 else 1
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder =
         when (viewType) {
@@ -97,7 +98,7 @@ class ProfileAdapter(val user: User, private val retryCallback: () -> Unit) :
     }
 
 
-    override fun getItemCount(): Int = super.getItemCount() + SHOWING_DATA_COUNT + if (hasExtraRow()) 1 else 0
+    override fun getItemCount(): Int = super.getItemCount() + showingDataCount + if (hasExtraRow()) 1 else 0
 
     private fun hasExtraRow() = networkState != null && networkState != NetworkState.LOADED
 
