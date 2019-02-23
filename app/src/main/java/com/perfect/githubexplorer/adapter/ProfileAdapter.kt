@@ -56,7 +56,7 @@ class ProfileAdapter(val user: User, private val retryCallback: () -> Unit) :
                 LayoutInflater.from(parent.context)
                     .inflate(R.layout.user_data_row, parent, false)
             )
-            else -> UserDataViewHolder(
+            else -> RepositoryViewHolder(
                 LayoutInflater.from(parent.context)
                     .inflate(R.layout.repository_row, parent, false)
             )
@@ -78,6 +78,7 @@ class ProfileAdapter(val user: User, private val retryCallback: () -> Unit) :
         private val starView: TextView = containerView.stars
 
         init {
+            containerView.user.visibility = View.GONE
             containerView.setOnClickListener {
                 onRepositorySelected?.invoke((it.tag as String).toLong())
             }
