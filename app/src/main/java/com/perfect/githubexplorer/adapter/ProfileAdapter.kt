@@ -1,7 +1,5 @@
 package com.perfect.githubexplorer.adapter
 
-import android.annotation.SuppressLint
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,154 +7,96 @@ import android.widget.TextView
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.RequestManager
-import com.perfect.githubexplorer.MainActivity
 import com.perfect.githubexplorer.R
 import com.perfect.githubexplorer.data.NetworkState
 import com.perfect.githubexplorer.data.Repository
 import kotlinx.android.synthetic.main.repository_row.view.*
-import org.jetbrains.anko.startActivity
-import android.os.Build
-import android.graphics.drawable.Drawable
-import androidx.transition.Transition
-import com.bumptech.glide.request.target.SimpleTarget
-import com.bumptech.glide.request.RequestOptions.bitmapTransform
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.target.Target
-import com.google.android.material.chip.Chip
-import kotlinx.coroutines.*
-import okhttp3.Dispatcher
+import com.perfect.githubexplorer.data.User
+import kotlinx.android.synthetic.main.user_data_row.view.*
 
+val SHOWING_DATA_COUNT = 4
 
-class ProfileAdapter(private val glide: RequestManager, private val retryCallback: () -> Unit) :
-    PagedListAdapter<Repository, ProfileAdapter.ViewHolder>(POST_COMPARATOR) {
+class ProfileAdapter(val user: User, private val retryCallback: () -> Unit) :
+    PagedListAdapter<Repository, RecyclerView.ViewHolder>(POST_COMPARATOR) {
 
     private var networkState: NetworkState? = null
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val repository = getItem(position)
-        if (repository != null) {
-            holder.bindTo(repository)
-        } else {
-            holder.clear()
+    var onRepositorySelected: ((Long) -> Unit)? = null
+
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        when (getItemViewType(position)) {
+            0 -> {
+                holder as UserDataViewHolder
+                when (position) {
+                    0 -> holder.bindTo("Email", user.username)
+                    1 -> holder.bindTo("Email", user.username)
+                    2 -> holder.bindTo("Email", user.username)
+                    3 -> holder.bindTo("Email", user.username)
+                    else -> holder.bindTo("", "")
+                }
+            }
+            else -> {
+                holder as RepositoryViewHolder
+                val repository = getItem(position - SHOWING_DATA_COUNT)
+                if (repository != null) {
+                    holder.bindTo(repository)
+                } else {
+                    holder.clear()
+                }
+            }
+        }
+
+    }
+
+    override fun getItemViewType(position: Int): Int = if (position < SHOWING_DATA_COUNT) 0 else 1
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder =
+        when (viewType) {
+            0 -> UserDataViewHolder(
+                LayoutInflater.from(parent.context)
+                    .inflate(R.layout.user_data_row, parent, false)
+            )
+            else -> UserDataViewHolder(
+                LayoutInflater.from(parent.context)
+                    .inflate(R.layout.repository_row, parent, false)
+            )
+        }
+
+
+    inner class UserDataViewHolder(containerView: View) : RecyclerView.ViewHolder(containerView) {
+        private val keyView: TextView = containerView.key
+        private val valueView: TextView = containerView.value
+
+        fun bindTo(key: String, value: String) {
+            keyView.text = key
+            valueView.text = value
         }
     }
 
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.repository_row, parent, false)
-
-        return ViewHolder(view)
-
-    }
-
-
-    inner class ViewHolder(private val containerView: View) : RecyclerView.ViewHolder(containerView) {
+    inner class RepositoryViewHolder(private val containerView: View) : RecyclerView.ViewHolder(containerView) {
         private val nameView: TextView = containerView.name
-        private val userView: Chip = containerView.user
         private val starView: TextView = containerView.stars
-        private var imageLoaderTarget: Target<Drawable>? = null
 
         init {
             containerView.setOnClickListener {
-                it.context.startActivity<MainActivity>(
-                    "id" to (it.tag as String)
-                )
-            }
-
-            userView.setOnClickListener {
-                it.context.startActivity<MainActivity>(
-                    "username" to (it.tag as String)
-                )
+                onRepositorySelected?.invoke((it.tag as String).toLong())
             }
         }
 
         fun bindTo(repository: Repository) {
             nameView.text = repository.fullName
-            userView.text = repository.owner.username
             starView.text = repository.owner.username
-
             containerView.tag = repository.id
-            userView.tag = repository.owner.username
-
-            userView.chipIcon = null
-
-            glide.clear(imageLoaderTarget)
-            imageLoaderTarget = glide.load(repository.owner.avatarUrl)
-                .into(object : SimpleTarget<Drawable>() {
-                    override fun onResourceReady(
-                        resource: Drawable,
-                        transition: com.bumptech.glide.request.transition.Transition<in Drawable>?
-                    ) {
-                        userView.chipIcon = resource
-                    }
-
-                })
-
-
-//            glide.asDrawable().load(repository.owner.avatarUrl)..listener(object : RequestListener<Drawable> {
-//                override fun onLoadFailed(
-//                    e: GlideException?,
-//                    model: Any?,
-//                    target: Target<Drawable>?,
-//                    isFirstResource: Boolean
-//                ): Boolean {
-//                    return true
-//                }
-//
-//                override fun onResourceReady(
-//                    resource: Drawable?,
-//                    model: Any?,
-//                    target: Target<Drawable>?,
-//                    dataSource: DataSource?,
-//                    isFirstResource: Boolean
-//                ): Boolean {
-//                    userView.chipIcon = resource
-//                    return true
-//                }
-//
-//            })
-
-//            imageLoader = GlobalScope.launch(Dispatchers.IO) {
-//                if (imageLoader != null && imageLoader!!.isActive) imageLoader!!.cancelAndJoin()
-//                val d = glide.asDrawable().load(repository.owner.avatarUrl).listener(object: RequestListener<Drawable>{
-//                    override fun onLoadFailed(
-//                        e: GlideException?,
-//                        model: Any?,
-//                        target: Target<Drawable>?,
-//                        isFirstResource: Boolean
-//                    ): Boolean {
-//                        return true
-//                    }
-//
-//                    override fun onResourceReady(
-//                        resource: Drawable?,
-//                        model: Any?,
-//                        target: Target<Drawable>?,
-//                        dataSource: DataSource?,
-//                        isFirstResource: Boolean
-//                    ): Boolean {
-//                       return true
-//                    }
-//
-//                })
-//                GlobalScope.launch(Dispatchers.Main) { userView.chipIcon = d }
-//        }
         }
 
         fun clear() {
             nameView.text = ""
-            userView.text = ""
             starView.text = ""
         }
     }
 
-    override fun getItemCount(): Int = super.getItemCount() + if (hasExtraRow()) 1 else 0
 
+    override fun getItemCount(): Int = super.getItemCount() + SHOWING_DATA_COUNT + if (hasExtraRow()) 1 else 0
 
     private fun hasExtraRow() = networkState != null && networkState != NetworkState.LOADED
 

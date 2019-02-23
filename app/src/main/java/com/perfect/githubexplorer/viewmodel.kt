@@ -27,6 +27,16 @@ class ProfileViewModel : ViewModel() {
         }
     }
 
+    val networkState: MutableLiveData<NetworkState> = MutableLiveData()
+
+    val repositories: LiveData<PagedList<Repository>> = Transformations.switchMap(user) { newUser ->
+        if (newUser == null) return@switchMap null
+
+        val sourceFactory = RepositoryDataSourceFactory(null, newUser.username)
+        sourceFactory.toLiveData(pageSize = DEFAULT_PAGE_SIZE)
+    }
+
+
 //    val userRepositories: LiveData<Repository?> = Transformations.switchMap(username) {
 //        if (it != null) GithubRepository.loadRepository(it) else null
 //    }

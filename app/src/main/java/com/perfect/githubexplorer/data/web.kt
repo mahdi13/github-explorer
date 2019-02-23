@@ -29,8 +29,10 @@ interface GithubApiInterface {
 
     @GET("users/{username}/repos")
     fun userRepositories(
-        @Path("username") username: String
-    ): Deferred<ArrayList<User>>
+        @Path("username") username: String,
+        @Query("page") page: Int,
+        @Query("per_page") pageSize: Int = DEFAULT_PAGE_SIZE
+    ): Deferred<List<Repository>>
 
     @GET("repositories/{id}")
     fun repositoryDetail(
