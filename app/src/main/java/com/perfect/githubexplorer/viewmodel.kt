@@ -62,31 +62,8 @@ class SearchViewModel : ViewModel() {
     val query: MutableLiveData<String?> = MutableLiveData()
     val networkState: MutableLiveData<NetworkState> = MutableLiveData()
     val repositories: LiveData<PagedList<Repository>> = Transformations.switchMap(query) { query ->
-
         val sourceFactory = RepositoryDataSourceFactory(query ?: "")
-
         sourceFactory.toLiveData(pageSize = DEFAULT_PAGE_SIZE)
-
-//        val livePagedList = sourceFactory.toLiveData(pageSize = DEFAULT_PAGE_SIZE)
-//
-//        val refreshState = Transformations.switchMap(sourceFactory.sourceLiveData) {
-//            it.initialLoad
-//        }
-//        Listing(
-//            pagedList = livePagedList,
-//            networkState = Transformations.switchMap(sourceFactory.sourceLiveData) {
-//                it.networkState
-//            },
-//            retry = {
-//                sourceFactory.sourceLiveData.value?.retryAllFailed()
-//            },
-//            refresh = {
-//                sourceFactory.sourceLiveData.value?.invalidate()
-//            },
-//            refreshState = refreshState
-//        )
-//
-//        LivePagedListBuilder(repositoryDao.loadPaging(), DEFAULT_PAGE_SIZE).build()
     }
 
 }
