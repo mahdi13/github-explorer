@@ -1,18 +1,30 @@
 package com.perfect.githubexplorer
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import androidx.paging.PagedList
 import androidx.paging.toLiveData
 import com.perfect.githubexplorer.data.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class ProfileViewModel : ViewModel() {
     val username: MutableLiveData<String?> = MutableLiveData()
 
-    val user: LiveData<User?> = Transformations.switchMap(username) {
-        if (it != null) GithubRepository.loadUser(it) else null
+    val user: LiveData<User?> = Transformations.switchMap(username) { newUsername ->
+        object : LiveData<User>() {
+            init {
+                newUsername?.let {
+                    CoroutineScope(Dispatchers.Default).launch {
+                        postValue(
+                            apiClient.userProfile(
+                                newUsername
+                            ).await()
+                        )
+                    }
+                }
+            }
+        }
     }
 
 //    val userRepositories: LiveData<Repository?> = Transformations.switchMap(username) {
@@ -22,9 +34,9 @@ class ProfileViewModel : ViewModel() {
 
 class RepositoryViewModel : ViewModel() {
     val repositoryId: MutableLiveData<Int?> = MutableLiveData()
-    val repository: LiveData<Repository?> = Transformations.switchMap(repositoryId) {
-        if (it != null) GithubRepository.loadRepository(it) else null
-    }
+//    val repository: LiveData<Repository?> = Transformations.switchMap(repositoryId) {
+//        if (it != null) GithubRepository.loadRepository(it) else null
+//    }
 }
 
 class SearchViewModel : ViewModel() {

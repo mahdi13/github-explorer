@@ -1,5 +1,7 @@
 package com.perfect.githubexplorer.adapter
 
+import android.annotation.SuppressLint
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,18 +16,25 @@ import com.perfect.githubexplorer.data.NetworkState
 import com.perfect.githubexplorer.data.Repository
 import kotlinx.android.synthetic.main.repository_row.view.*
 import org.jetbrains.anko.startActivity
+import android.os.Build
 import android.graphics.drawable.Drawable
+import androidx.transition.Transition
 import com.bumptech.glide.request.target.SimpleTarget
+import com.bumptech.glide.request.RequestOptions.bitmapTransform
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.google.android.material.chip.Chip
+import kotlinx.coroutines.*
+import okhttp3.Dispatcher
 
-class RepositoryAdapter(private val glide: RequestManager, private val retryCallback: () -> Unit) :
-    PagedListAdapter<Repository, RepositoryAdapter.ViewHolder>(POST_COMPARATOR) {
+
+class ProfileAdapter(private val glide: RequestManager, private val retryCallback: () -> Unit) :
+    PagedListAdapter<Repository, ProfileAdapter.ViewHolder>(POST_COMPARATOR) {
 
     private var networkState: NetworkState? = null
-
-    var onRepositorySelected: ((Long) -> Unit)? = null
-    var onProfileSelected: ((String) -> Unit)? = null
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val repository = getItem(position)
@@ -36,6 +45,7 @@ class RepositoryAdapter(private val glide: RequestManager, private val retryCall
         }
     }
 
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.repository_row, parent, false)
@@ -43,6 +53,7 @@ class RepositoryAdapter(private val glide: RequestManager, private val retryCall
         return ViewHolder(view)
 
     }
+
 
     inner class ViewHolder(private val containerView: View) : RecyclerView.ViewHolder(containerView) {
         private val nameView: TextView = containerView.name
@@ -52,11 +63,15 @@ class RepositoryAdapter(private val glide: RequestManager, private val retryCall
 
         init {
             containerView.setOnClickListener {
-                onRepositorySelected?.invoke((it.tag as String).toLong())
+                it.context.startActivity<MainActivity>(
+                    "id" to (it.tag as String)
+                )
             }
 
             userView.setOnClickListener {
-                onProfileSelected?.invoke(it.tag as String)
+                it.context.startActivity<MainActivity>(
+                    "username" to (it.tag as String)
+                )
             }
         }
 
@@ -82,6 +97,55 @@ class RepositoryAdapter(private val glide: RequestManager, private val retryCall
 
                 })
 
+
+//            glide.asDrawable().load(repository.owner.avatarUrl)..listener(object : RequestListener<Drawable> {
+//                override fun onLoadFailed(
+//                    e: GlideException?,
+//                    model: Any?,
+//                    target: Target<Drawable>?,
+//                    isFirstResource: Boolean
+//                ): Boolean {
+//                    return true
+//                }
+//
+//                override fun onResourceReady(
+//                    resource: Drawable?,
+//                    model: Any?,
+//                    target: Target<Drawable>?,
+//                    dataSource: DataSource?,
+//                    isFirstResource: Boolean
+//                ): Boolean {
+//                    userView.chipIcon = resource
+//                    return true
+//                }
+//
+//            })
+
+//            imageLoader = GlobalScope.launch(Dispatchers.IO) {
+//                if (imageLoader != null && imageLoader!!.isActive) imageLoader!!.cancelAndJoin()
+//                val d = glide.asDrawable().load(repository.owner.avatarUrl).listener(object: RequestListener<Drawable>{
+//                    override fun onLoadFailed(
+//                        e: GlideException?,
+//                        model: Any?,
+//                        target: Target<Drawable>?,
+//                        isFirstResource: Boolean
+//                    ): Boolean {
+//                        return true
+//                    }
+//
+//                    override fun onResourceReady(
+//                        resource: Drawable?,
+//                        model: Any?,
+//                        target: Target<Drawable>?,
+//                        dataSource: DataSource?,
+//                        isFirstResource: Boolean
+//                    ): Boolean {
+//                       return true
+//                    }
+//
+//                })
+//                GlobalScope.launch(Dispatchers.Main) { userView.chipIcon = d }
+//        }
         }
 
         fun clear() {

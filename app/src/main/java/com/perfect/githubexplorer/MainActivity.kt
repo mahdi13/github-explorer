@@ -18,6 +18,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import android.widget.AutoCompleteTextView
 import androidx.appcompat.widget.SearchView
 import com.bumptech.glide.Glide
+import org.jetbrains.anko.startActivity
 
 
 class MainActivity : AppCompatActivity() {
@@ -38,10 +39,22 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initAdapter() {
-        val glide = Glide.with(this)
-        val adapter = RepositoryAdapter(glide) {
+        adapter = RepositoryAdapter(Glide.with(this)) {
             //            viewModel.retry()
         }
+
+        adapter.onRepositorySelected = {
+            startActivity<UserProfileActivity>(
+                "username" to it
+            )
+        }
+
+        adapter.onProfileSelected = {
+            startActivity<UserProfileActivity>(
+                "username" to it
+            )
+        }
+
         list.adapter = adapter
         viewModel.repositories.observe(this, Observer<PagedList<Repository>> {
             adapter.submitList(it)
@@ -50,6 +63,8 @@ class MainActivity : AppCompatActivity() {
             adapter.setNetworkState(it)
         })
         list.layoutManager = LinearLayoutManager(this)
+
+        viewModel.query.value = ""
     }
 
 
