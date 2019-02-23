@@ -18,13 +18,16 @@ import kotlinx.android.synthetic.main.activity_main.*
 import android.widget.AutoCompleteTextView
 import androidx.appcompat.widget.SearchView
 import com.bumptech.glide.Glide
+import org.jetbrains.anko.displayMetrics
 import org.jetbrains.anko.startActivity
+import android.util.DisplayMetrics
 
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var viewModel: SearchViewModel
     private lateinit var adapter: RepositoryAdapter
+    private lateinit var searchView: SearchView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,8 +66,6 @@ class MainActivity : AppCompatActivity() {
             adapter.setNetworkState(it)
         })
         list.layoutManager = LinearLayoutManager(this)
-
-        viewModel.query.value = ""
     }
 
 
@@ -75,7 +76,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupSearchView(searchMenuItem: MenuItem) {
-        val searchView = searchMenuItem.actionView as SearchView
+        searchView = searchMenuItem.actionView as SearchView
         searchView.queryHint = getString(R.string.search_title) // your hint here
 
         try {
@@ -88,15 +89,23 @@ class MainActivity : AppCompatActivity() {
 
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
+                viewModel.query.value = query
                 return true
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                viewModel.query.postValue(newText)
                 return true
             }
 
         })
+
+        viewModel.query.observe(this, Observer {
+            searchView.setQuery(it ?: "", false)
+        })
+
+        searchView.maxWidth = DisplayMetrics().apply { windowManager.defaultDisplay.getMetrics(this) }.widthPixels / 2
+        searchView.isIconified = false
+        viewModel.query.value = "hello"
 
     }
 
