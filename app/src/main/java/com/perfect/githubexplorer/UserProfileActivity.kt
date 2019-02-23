@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.perfect.githubexplorer.adapter.ProfileAdapter
+import com.perfect.githubexplorer.data.ProfileViewModel
 import com.perfect.githubexplorer.data.Repository
 import com.perfect.githubexplorer.data.User
 import kotlinx.android.synthetic.main.activity_user_profile.*

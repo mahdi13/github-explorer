@@ -5,6 +5,7 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import com.perfect.githubexplorer.data.RepositoryViewModel
 import kotlinx.android.synthetic.main.activity_repository.*
 
 class RepositoryActivity : AppCompatActivity() {
