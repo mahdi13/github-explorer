@@ -22,7 +22,7 @@ class ProfileAdapter(val user: User, private val retryCallback: () -> Unit) :
 
     private var networkState: NetworkState? = null
 
-    var onRepositorySelected: ((Long) -> Unit)? = null
+    var onRepositorySelected: ((Int) -> Unit)? = null
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (getItemViewType(position)) {
@@ -81,7 +81,7 @@ class ProfileAdapter(val user: User, private val retryCallback: () -> Unit) :
         init {
             containerView.user.visibility = View.GONE
             containerView.setOnClickListener {
-                onRepositorySelected?.invoke((it.tag as String).toLong())
+                onRepositorySelected?.invoke(it.tag as Int)
             }
         }
 

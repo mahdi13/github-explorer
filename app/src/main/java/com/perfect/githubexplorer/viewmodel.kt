@@ -36,17 +36,26 @@ class ProfileViewModel : ViewModel() {
         sourceFactory.toLiveData(pageSize = DEFAULT_PAGE_SIZE)
     }
 
-
-//    val userRepositories: LiveData<Repository?> = Transformations.switchMap(username) {
-//        if (it != null) GithubRepository.loadRepository(it) else null
-//    }
 }
 
 class RepositoryViewModel : ViewModel() {
     val repositoryId: MutableLiveData<Int?> = MutableLiveData()
-//    val repository: LiveData<Repository?> = Transformations.switchMap(repositoryId) {
-//        if (it != null) GithubRepository.loadRepository(it) else null
-//    }
+
+    val repository: LiveData<Repository?> = Transformations.switchMap(repositoryId) { newRepositoryId ->
+        object : LiveData<Repository>() {
+            init {
+                newRepositoryId?.let {
+                    CoroutineScope(Dispatchers.Default).launch {
+                        postValue(
+                            apiClient.repositoryDetail(
+                                newRepositoryId
+                            ).await()
+                        )
+                    }
+                }
+            }
+        }
+    }
 }
 
 class SearchViewModel : ViewModel() {

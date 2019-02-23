@@ -24,7 +24,7 @@ class RepositoryAdapter(private val glide: RequestManager, private val retryCall
 
     private var networkState: NetworkState? = null
 
-    var onRepositorySelected: ((Long) -> Unit)? = null
+    var onRepositorySelected: ((Int) -> Unit)? = null
     var onProfileSelected: ((String) -> Unit)? = null
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -52,7 +52,7 @@ class RepositoryAdapter(private val glide: RequestManager, private val retryCall
 
         init {
             containerView.setOnClickListener {
-                onRepositorySelected?.invoke((it.tag as String).toLong())
+                onRepositorySelected?.invoke(it.tag as Int)
             }
 
             userView.setOnClickListener {

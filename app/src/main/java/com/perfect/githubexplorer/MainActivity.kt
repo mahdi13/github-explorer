@@ -1,13 +1,10 @@
 package com.perfect.githubexplorer
 
-import android.app.SearchManager
-import android.content.Context
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.paging.PagedList
@@ -18,7 +15,6 @@ import kotlinx.android.synthetic.main.activity_main.*
 import android.widget.AutoCompleteTextView
 import androidx.appcompat.widget.SearchView
 import com.bumptech.glide.Glide
-import org.jetbrains.anko.displayMetrics
 import org.jetbrains.anko.startActivity
 import android.util.DisplayMetrics
 
@@ -47,8 +43,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         adapter.onRepositorySelected = {
-            startActivity<UserProfileActivity>(
-                "username" to it
+            startActivity<RepositoryActivity>(
+                "id" to it
             )
         }
 
@@ -105,7 +101,7 @@ class MainActivity : AppCompatActivity() {
 
         searchView.maxWidth = DisplayMetrics().apply { windowManager.defaultDisplay.getMetrics(this) }.widthPixels / 2
         searchView.isIconified = false
-        viewModel.query.value = "hello"
+        if (viewModel.query.value == null) viewModel.query.value = "hello"
 
     }
 

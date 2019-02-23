@@ -1,6 +1,7 @@
 package com.perfect.githubexplorer
 
 import android.os.Bundle
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -43,8 +44,8 @@ class UserProfileActivity : AppCompatActivity() {
         }
 
         adapter.onRepositorySelected = {
-            startActivity<UserProfileActivity>(
-                "username" to it
+            startActivity<RepositoryActivity>(
+                "id" to it
             )
         }
 
@@ -60,5 +61,6 @@ class UserProfileActivity : AppCompatActivity() {
         list.layoutManager = LinearLayoutManager(this)
     }
 
+    override fun onOptionsItemSelected(item: MenuItem) = finish().run { true }
 
 }
