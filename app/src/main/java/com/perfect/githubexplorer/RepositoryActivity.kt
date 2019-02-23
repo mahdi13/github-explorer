@@ -37,8 +37,10 @@ class RepositoryActivity : AppCompatActivity() {
                 "https://raw.githubusercontent.com/${repository?.fullName}/${repository?.defaultBranch}/README.md"
             )
 
-            name.text = repository?.name
-            owner.text = repository?.owner?.username
+            val naText = "Not Available"
+
+            name.text = repository?.name ?: naText
+            owner.text = repository?.owner?.username ?: naText
             imageLoaderTarget = glide.load(repository?.owner?.avatarUrl)
                 .into(object : SimpleTarget<Drawable>() {
                     override fun onResourceReady(
@@ -55,10 +57,10 @@ class RepositoryActivity : AppCompatActivity() {
                 )
             }
 
-            email.text = repository?.owner?.email ?: "Not Available"
-            default_branch.text = repository?.defaultBranch
-            forks.text = repository?.forks.toString()
-            language.text = repository?.language
+            email.text = repository?.owner?.email ?: naText
+            default_branch.text = repository?.defaultBranch ?: naText
+            forks.text = repository?.forks?.toString() ?: naText
+            language.text = repository?.language ?: naText
 
         })
 
