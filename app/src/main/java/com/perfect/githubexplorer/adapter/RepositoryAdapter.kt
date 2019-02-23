@@ -8,12 +8,10 @@ import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.RequestManager
-import com.perfect.githubexplorer.MainActivity
 import com.perfect.githubexplorer.R
 import com.perfect.githubexplorer.data.NetworkState
 import com.perfect.githubexplorer.data.Repository
 import kotlinx.android.synthetic.main.repository_row.view.*
-import org.jetbrains.anko.startActivity
 import android.graphics.drawable.Drawable
 import com.bumptech.glide.request.target.SimpleTarget
 import com.bumptech.glide.request.target.Target

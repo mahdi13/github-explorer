@@ -1,63 +1,163 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                                                     xmlns:app="http://schemas.android.com/apk/res-auto"
-                                                     xmlns:tools="http://schemas.android.com/tools"
-                                                     android:layout_width="match_parent"
-                                                     android:layout_height="match_parent"
-                                                     android:fitsSystemWindows="true"
-                                                     tools:context=".RepositoryActivity"
-                                                     tools:ignore="MergeRootFrame">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              tools:context=".RepositoryActivity"
+              tools:ignore="MergeRootFrame"
+              android:orientation="vertical">
 
     <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/app_bar"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/app_bar_height"
-            android:fitsSystemWindows="true"
+            android:layout_height="wrap_content"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-        <com.google.android.material.appbar.CollapsingToolbarLayout
-                android:id="@+id/toolbar_layout"
+        <androidx.appcompat.widget.Toolbar
+                android:id="@+id/detail_toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:fitsSystemWindows="true"
-                app:contentScrim="?attr/colorPrimary"
-                app:layout_scrollFlags="scroll|exitUntilCollapsed"
-                app:toolbarId="@+id/toolbar">
-
-            <View
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:alpha="0.3"
-                    android:background="@android:color/black"
-                    android:fitsSystemWindows="true"/>
-
-            <androidx.appcompat.widget.Toolbar
-                    android:id="@+id/detail_toolbar"
-                    android:layout_width="match_parent"
-                    android:layout_height="?attr/actionBarSize"
-                    app:layout_collapseMode="pin"
-                    app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
-
-        </com.google.android.material.appbar.CollapsingToolbarLayout>
+                android:layout_height="?attr/actionBarSize"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/list"
+
+    <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp">
+
+        <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            <TableRow>
+
+                <TextView
+                        android:text="Name"
+                        android:gravity="center"
+                        android:padding="3dp"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"/>
+
+                <TextView
+                        android:id="@+id/name"
+                        android:gravity="center"
+                        android:textStyle="bold"
+                        android:padding="3dp"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"/>
+            </TableRow>
+
+            <TableRow>
+
+                <TextView
+                        android:text="Owner"
+                        android:gravity="center"
+                        android:layout_gravity="center"
+                        android:padding="3dp"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"/>
+
+                <FrameLayout
+                        android:gravity="center"
+                        android:layout_width="0dp"
+                        android:layout_weight="1">
+
+                    <com.google.android.material.chip.Chip
+                            android:id="@+id/owner"
+                            android:layout_gravity="center"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Username"/>
+                </FrameLayout>
+            </TableRow>
+
+            <TableRow>
+
+                <TextView
+                        android:text="Email"
+                        android:gravity="center"
+                        android:padding="3dp"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"/>
+
+                <TextView
+                        android:id="@+id/email"
+                        android:gravity="center"
+                        android:textStyle="bold"
+                        android:padding="3dp"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"/>
+            </TableRow>
+
+            <TableRow>
+
+                <TextView
+                        android:text="Forks"
+                        android:gravity="center"
+                        android:padding="3dp"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"/>
+
+                <TextView
+                        android:id="@+id/forks"
+                        android:gravity="center"
+                        android:textStyle="bold"
+                        android:padding="3dp"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"/>
+            </TableRow>
+
+            <TableRow>
+
+                <TextView
+                        android:text="Language"
+                        android:gravity="center"
+                        android:padding="3dp"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"/>
+
+                <TextView
+                        android:id="@+id/language"
+                        android:gravity="center"
+                        android:textStyle="bold"
+                        android:padding="3dp"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"/>
+            </TableRow>
+
+            <TableRow>
+
+                <TextView
+                        android:text="Default Branch"
+                        android:gravity="center"
+                        android:padding="3dp"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"/>
+
+                <TextView
+                        android:id="@+id/default_branch"
+                        android:gravity="center"
+                        android:textStyle="bold"
+                        android:padding="3dp"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"/>
+            </TableRow>
+
+        </TableLayout>
+
+    </androidx.cardview.widget.CardView>
+
+
+    <es.dmoral.markdownview.MarkdownView
+            android:id="@+id/markdown_view"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
-    <!--<com.google.android.material.floatingactionbutton.FloatingActionButton-->
-    <!--android:id="@+id/fab"-->
-    <!--android:layout_width="wrap_content"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:layout_gravity="center_vertical|start"-->
-    <!--android:layout_margin="@dimen/fab_margin"-->
-    <!--app:srcCompat="@drawable/ic_edit_black_24dp"-->
-    <!--app:layout_anchor="@+id/list"-->
-    <!--app:layout_anchorGravity="top|end"-->
-    <!--app:tint="#ffffff"-->
-    <!--app:backgroundTint="@color/colorAccent"/>-->
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</LinearLayout>

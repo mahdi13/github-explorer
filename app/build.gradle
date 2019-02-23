@@ -73,6 +73,9 @@ dependencies {
     // Anko
     implementation 'org.jetbrains.anko:anko-common:0.10.8'
 
+    // Others
+    implementation 'com.github.GrenderG:MarkdownView:0.1.2'
+
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.1.2-alpha01'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.2-alpha01'
