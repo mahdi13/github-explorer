@@ -16,33 +16,53 @@ import android.graphics.drawable.Drawable
 import com.bumptech.glide.request.target.SimpleTarget
 import com.bumptech.glide.request.target.Target
 import com.google.android.material.chip.Chip
+import kotlinx.android.synthetic.main.network_state_row.view.*
 
 class RepositoryAdapter(private val glide: RequestManager, private val retryCallback: () -> Unit) :
-    PagedListAdapter<Repository, RepositoryAdapter.ViewHolder>(POST_COMPARATOR) {
+    PagedListAdapter<Repository, RecyclerView.ViewHolder>(POST_COMPARATOR) {
 
     private var networkState: NetworkState? = null
 
     var onRepositorySelected: ((Int) -> Unit)? = null
     var onProfileSelected: ((String) -> Unit)? = null
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val repository = getItem(position)
-        if (repository != null) {
-            holder.bindTo(repository)
-        } else {
-            holder.clear()
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+
+        when (getItemViewType(position)) {
+            R.layout.repository_row -> (holder as RepositoryViewHolder).bindTo(getItem(position))
+            R.layout.network_state_row -> (holder as NetworkStateViewHolder).bindTo(networkState)
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.repository_row, parent, false)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder =
+        when (viewType) {
+            R.layout.repository_row -> RepositoryViewHolder(
+                LayoutInflater.from(parent.context)
+                    .inflate(R.layout.repository_row, parent, false)
+            )
+            R.layout.network_state_row -> NetworkStateViewHolder(
+                LayoutInflater.from(parent.context)
+                    .inflate(R.layout.network_state_row, parent, false)
+            )
+            else -> throw IllegalArgumentException("unknown view type $viewType")
+        }
 
-        return ViewHolder(view)
+
+    inner class NetworkStateViewHolder(containerView: View) : RecyclerView.ViewHolder(containerView) {
+        private val stateView: TextView = containerView.state
+
+        fun bindTo(networkState: NetworkState?) {
+            if (networkState == null) return clear()
+            stateView.text = networkState.toString()
+        }
+
+        private fun clear() {
+            stateView.text = ""
+        }
 
     }
 
-    inner class ViewHolder(private val containerView: View) : RecyclerView.ViewHolder(containerView) {
+    inner class RepositoryViewHolder(private val containerView: View) : RecyclerView.ViewHolder(containerView) {
         private val nameView: TextView = containerView.name
         private val userView: Chip = containerView.user
         private val starView: TextView = containerView.stars
@@ -58,7 +78,9 @@ class RepositoryAdapter(private val glide: RequestManager, private val retryCall
             }
         }
 
-        fun bindTo(repository: Repository) {
+        fun bindTo(repository: Repository?) {
+            if (repository == null) return clear()
+
             nameView.text = repository.fullName
             userView.text = repository.owner.username
             starView.text = repository.owner.username
@@ -82,15 +104,23 @@ class RepositoryAdapter(private val glide: RequestManager, private val retryCall
 
         }
 
-        fun clear() {
+        private fun clear() {
             nameView.text = ""
             userView.text = ""
             starView.text = ""
         }
     }
 
-    override fun getItemCount(): Int = super.getItemCount() + if (hasExtraRow()) 1 else 0
+    override fun getItemViewType(position: Int): Int {
+        return if (hasExtraRow() && position == itemCount - 1) {
+            R.layout.network_state_row
+        } else {
+            R.layout.repository_row
+        }
+    }
 
+
+    override fun getItemCount(): Int = super.getItemCount() + if (hasExtraRow()) 1 else 0
 
     private fun hasExtraRow() = networkState != null && networkState != NetworkState.LOADED
 

@@ -56,12 +56,15 @@ class MainActivity : AppCompatActivity() {
         }
 
         list.adapter = adapter
+
         viewModel.repositories.observe(this, Observer<PagedList<Repository>> {
             adapter.submitList(it)
         })
+
         viewModel.networkState.observe(this, Observer {
             adapter.setNetworkState(it)
         })
+
         list.layoutManager = LinearLayoutManager(this)
     }
 

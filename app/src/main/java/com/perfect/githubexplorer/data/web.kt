@@ -63,6 +63,13 @@ data class NetworkState private constructor(
         val LOADING = NetworkState(NetworkStatus.RUNNING)
         fun error(msg: String?) = NetworkState(NetworkStatus.FAILED, msg)
     }
+
+    override fun toString(): String =
+        when (status) {
+            NetworkStatus.RUNNING -> "Loading ..."
+            NetworkStatus.SUCCESS -> "Loading Completed!"
+            NetworkStatus.FAILED -> "Error Loading! Try Again!"
+        }
 }
 
 var apiClient = Retrofit.Builder()

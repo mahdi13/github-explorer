@@ -1,6 +1,7 @@
 package com.perfect.githubexplorer.data
 
 import androidx.lifecycle.*
+import androidx.lifecycle.Transformations.switchMap
 import androidx.paging.PagedList
 import androidx.paging.toLiveData
 import kotlinx.coroutines.CoroutineScope
@@ -59,11 +60,12 @@ class RepositoryViewModel : ViewModel() {
 
 class SearchViewModel : ViewModel() {
     val query: MutableLiveData<String?> = MutableLiveData()
-    val networkState: MutableLiveData<NetworkState> = MutableLiveData()
     val repositories: LiveData<PagedList<Repository>> = Transformations.switchMap(query) { query ->
         val sourceFactory = RepositoryDataSourceFactory(query ?: "")
         sourceFactory.toLiveData(pageSize = DEFAULT_PAGE_SIZE)
     }
+    val networkState = Transformations.switchMap(repositories) { (it.dataSource as RepositoryDataSource).networkState }
+
 
 }
 
