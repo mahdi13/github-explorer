@@ -10,7 +10,7 @@ import com.bumptech.glide.request.target.SimpleTarget
 import com.bumptech.glide.request.target.Target
 import com.google.android.material.chip.Chip
 import com.perfect.githubexplorer.R
-import com.perfect.githubexplorer.data.NetworkState
+import com.perfect.githubexplorer.data.LoadingStatus
 import com.perfect.githubexplorer.data.Repository
 import kotlinx.android.synthetic.main.network_state_row.view.*
 import kotlinx.android.synthetic.main.repository_row.view.*
@@ -23,9 +23,9 @@ class NetworkStateViewHolder(parent: ViewGroup) :
     ) {
     private val stateView: TextView = itemView.state
 
-    fun bindTo(networkState: NetworkState?) {
-        if (networkState == null) return clear()
-        stateView.text = networkState.toString()
+    fun bindTo(loadingStatus: LoadingStatus?) {
+        if (loadingStatus == null) return clear()
+        stateView.text = loadingStatus.toString(itemView.context)
     }
 
     private fun clear() {

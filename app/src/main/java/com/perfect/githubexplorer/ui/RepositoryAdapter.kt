@@ -6,13 +6,13 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.RequestManager
 import com.perfect.githubexplorer.R
-import com.perfect.githubexplorer.data.NetworkState
+import com.perfect.githubexplorer.data.LoadingStatus
 import com.perfect.githubexplorer.data.Repository
 
 class RepositoryAdapter(private val glide: RequestManager) :
     PagedListAdapter<Repository, RecyclerView.ViewHolder>(POST_COMPARATOR) {
 
-    private var networkState: NetworkState? = null
+    private var loadingStatus: LoadingStatus? = null
 
     var onRepositorySelected: ((Int) -> Unit)? = null
     var onProfileSelected: ((String) -> Unit)? = null
@@ -20,7 +20,7 @@ class RepositoryAdapter(private val glide: RequestManager) :
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (getItemViewType(position)) {
             R.layout.repository_row -> (holder as RepositoryViewHolder).bindTo(getItem(position))
-            R.layout.network_state_row -> (holder as NetworkStateViewHolder).bindTo(networkState)
+            R.layout.network_state_row -> (holder as NetworkStateViewHolder).bindTo(loadingStatus)
         }
     }
 
@@ -42,12 +42,12 @@ class RepositoryAdapter(private val glide: RequestManager) :
 
     override fun getItemCount(): Int = super.getItemCount() + if (hasExtraRow()) 1 else 0
 
-    private fun hasExtraRow() = networkState != null && networkState != NetworkState.LOADED
+    private fun hasExtraRow() = loadingStatus != null && loadingStatus != LoadingStatus.LOADED
 
-    fun setNetworkState(newNetworkState: NetworkState?) {
-        val previousState = this.networkState
+    fun setNetworkState(newLoadingStatus: LoadingStatus?) {
+        val previousState = this.loadingStatus
         val hadExtraRow = hasExtraRow()
-        this.networkState = newNetworkState
+        this.loadingStatus = newLoadingStatus
         val hasExtraRow = hasExtraRow()
         if (hadExtraRow != hasExtraRow) {
             if (hadExtraRow) {
@@ -55,7 +55,7 @@ class RepositoryAdapter(private val glide: RequestManager) :
             } else {
                 notifyItemInserted(super.getItemCount())
             }
-        } else if (hasExtraRow && previousState != newNetworkState) {
+        } else if (hasExtraRow && previousState != newLoadingStatus) {
             notifyItemChanged(itemCount - 1)
         }
     }

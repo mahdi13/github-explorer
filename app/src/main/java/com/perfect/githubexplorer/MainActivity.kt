@@ -43,13 +43,13 @@ class MainActivity : AppCompatActivity() {
 
         adapter.onRepositorySelected = {
             startActivity<RepositoryActivity>(
-                "id" to it
+                RepositoryActivity.EXTRA_ID to it
             )
         }
 
         adapter.onProfileSelected = {
             startActivity<UserProfileActivity>(
-                "username" to it
+                UserProfileActivity.EXTRA_USERNAME to it
             )
         }
 
@@ -59,7 +59,7 @@ class MainActivity : AppCompatActivity() {
             adapter.submitList(it)
         })
 
-        viewModel.networkState.observe(this, Observer {
+        viewModel.loadingState.observe(this, Observer {
             adapter.setNetworkState(it)
         })
 

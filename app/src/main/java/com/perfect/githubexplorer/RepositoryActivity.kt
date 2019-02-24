@@ -10,6 +10,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
 import com.bumptech.glide.request.target.SimpleTarget
 import com.bumptech.glide.request.target.Target
+import com.perfect.githubexplorer.data.GITHUB_MARKDOWN_URL
 import com.perfect.githubexplorer.ui.RepositoryViewModel
 import kotlinx.android.synthetic.main.activity_repository.*
 import org.jetbrains.anko.startActivity
@@ -34,13 +35,11 @@ class RepositoryActivity : AppCompatActivity() {
         viewModel.repository.observe(this, Observer { repository ->
             supportActionBar?.title = repository?.name
             markdown_view.loadFromUrl(
-                "https://raw.githubusercontent.com/${repository?.fullName}/${repository?.defaultBranch}/README.md"
+                GITHUB_MARKDOWN_URL.format(repository?.fullName, repository?.defaultBranch)
             )
 
-            val naText = "Not Available"
-
-            name.text = repository?.name ?: naText
-            owner.text = repository?.owner?.username ?: naText
+            name.text = repository?.name ?: getString(R.string.not_available)
+            owner.text = repository?.owner?.username ?: getString(R.string.not_available)
             imageLoaderTarget = glide.load(repository?.owner?.avatarUrl)
                 .into(object : SimpleTarget<Drawable>() {
                     override fun onResourceReady(
@@ -53,23 +52,28 @@ class RepositoryActivity : AppCompatActivity() {
                 })
             owner.setOnClickListener {
                 startActivity<UserProfileActivity>(
-                    "username" to repository?.owner?.username
+                    UserProfileActivity.EXTRA_USERNAME to repository?.owner?.username
                 )
             }
 
-            email.text = repository?.owner?.email ?: naText
-            default_branch.text = repository?.defaultBranch ?: naText
-            forks.text = repository?.forks?.toString() ?: naText
-            language.text = repository?.language ?: naText
+            email.text = repository?.owner?.email ?: getString(R.string.not_available)
+            default_branch.text = repository?.defaultBranch ?: getString(R.string.not_available)
+            forks.text = repository?.forks?.toString() ?: getString(R.string.not_available)
+            language.text = repository?.language ?: getString(R.string.not_available)
 
         })
 
-        viewModel.repositoryId.postValue(intent.getIntExtra("id", 0))
+        viewModel.repositoryId.postValue(intent.getIntExtra(EXTRA_ID, 0))
 
     }
 
     override fun onPause() = super.onPause().apply { glide.clear(imageLoaderTarget) }
 
     override fun onOptionsItemSelected(item: MenuItem) = finish().run { true }
+
+
+    companion object {
+        const val EXTRA_ID = "id"
+    }
 
 }

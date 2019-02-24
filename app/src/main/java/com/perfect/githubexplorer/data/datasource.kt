@@ -22,30 +22,15 @@ class RepositoryDataSourceFactory(private val query: String?, private val userna
 
 class RepositoryDataSource(var query: String?, var username: String?) : PageKeyedDataSource<Int, Repository>() {
 
-    val networkState = MutableLiveData<NetworkState>()
-    val initialLoad = MutableLiveData<NetworkState>()
+    val networkState = MutableLiveData<LoadingStatus>()
 
     private val scope = CoroutineScope(Dispatchers.Default)
 
-    private var retry: (() -> Any)? = null
-
-    fun retryAllFailed() {
-        val prevRetry = retry
-        retry = null
-        prevRetry?.let {
-            scope.launch {
-                it.invoke()
-            }
-        }
-    }
-
     override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, Repository>) {
-        networkState.postValue(NetworkState.LOADING)
-        initialLoad.postValue(NetworkState.LOADING)
+        networkState.postValue(LoadingStatus.LOADING)
 
         scope.launch {
             try {
-
                 val result = if (username != null) {
                     apiClient.userRepositories(
                         username = username!!,
@@ -60,26 +45,19 @@ class RepositoryDataSource(var query: String?, var username: String?) : PageKeye
                     ).await().items
                 }
 
-                retry = null
-                networkState.postValue(NetworkState.LOADED)
-                initialLoad.postValue(NetworkState.LOADED)
+                networkState.postValue(LoadingStatus.LOADED)
                 callback.onResult(result, null, 1)
 
             } catch (e: Exception) {
-                retry = {
-                    loadInitial(params, callback)
-                }
-                val error = NetworkState.error(e.message ?: "unknown error")
+                val error = LoadingStatus.FAILED
                 networkState.postValue(error)
-                initialLoad.postValue(error)
-
             }
         }
 
     }
 
     override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, Repository>) {
-        networkState.postValue(NetworkState.LOADING)
+        networkState.postValue(LoadingStatus.LOADING)
         scope.launch {
             try {
                 val result = if (username != null) {
@@ -96,16 +74,12 @@ class RepositoryDataSource(var query: String?, var username: String?) : PageKeye
                     ).await().items
                 }
 
-                retry = null
                 callback.onResult(result, params.key + 1)
-                networkState.postValue(NetworkState.LOADED)
+                networkState.postValue(LoadingStatus.LOADED)
 
             } catch (e: Exception) {
-                retry = {
-                    loadAfter(params, callback)
-                }
                 networkState.postValue(
-                    NetworkState.error(e.message)
+                    LoadingStatus.FAILED
                 )
             }
         }

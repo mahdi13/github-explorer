@@ -1,7 +1,9 @@
 package com.perfect.githubexplorer.data
 
+import android.content.Context
 import com.google.gson.annotations.SerializedName
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
+import com.perfect.githubexplorer.R
 import kotlinx.coroutines.Deferred
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -10,6 +12,7 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 const val GITHUB_BASE_API_URL = "https://api.github.com"
+const val GITHUB_MARKDOWN_URL = "https://raw.githubusercontent.com/%s/%s/README.md"
 const val DEFAULT_PAGE_SIZE = 20
 
 @Suppress("DeferredIsResult")
@@ -47,32 +50,20 @@ data class SearchRepositoryResponse(
     @SerializedName("incomplete_results") val incompleteResults: Boolean
 )
 
-enum class NetworkStatus {
-    RUNNING,
-    SUCCESS,
-    FAILED
-}
+enum class LoadingStatus {
+    LOADING,
+    LOADED,
+    FAILED;
 
-@Suppress("DataClassPrivateConstructor")
-data class NetworkState private constructor(
-    val status: NetworkStatus,
-    val msg: String? = null
-) {
-    companion object {
-        val LOADED = NetworkState(NetworkStatus.SUCCESS)
-        val LOADING = NetworkState(NetworkStatus.RUNNING)
-        fun error(msg: String?) = NetworkState(NetworkStatus.FAILED, msg)
-    }
-
-    override fun toString(): String =
-        when (status) {
-            NetworkStatus.RUNNING -> "Loading ..."
-            NetworkStatus.SUCCESS -> "Loading Completed!"
-            NetworkStatus.FAILED -> "Error Loading! Try Again!"
+    fun toString(context: Context): String =
+        when (this) {
+            LoadingStatus.LOADING -> context.getString(R.string.loading_status)
+            LoadingStatus.LOADED -> context.getString(R.string.success_status)
+            LoadingStatus.FAILED -> context.getString(R.string.failed_status)
         }
 }
 
-var apiClient = Retrofit.Builder()
+var apiClient: GithubApiInterface = Retrofit.Builder()
     .baseUrl(GITHUB_BASE_API_URL)
     .addCallAdapterFactory(CoroutineCallAdapterFactory())
     .addConverterFactory(GsonConverterFactory.create())

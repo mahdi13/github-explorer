@@ -27,7 +27,7 @@ class ProfileViewModel : ViewModel() {
         }
     }
 
-    val networkState: MutableLiveData<NetworkState> = MutableLiveData()
+    val loadingStatus: MutableLiveData<LoadingStatus> = MutableLiveData()
 
     val repositories: LiveData<PagedList<Repository>> = Transformations.switchMap(user) { newUser ->
         if (newUser == null) return@switchMap null
@@ -64,7 +64,7 @@ class SearchViewModel : ViewModel() {
         val sourceFactory = RepositoryDataSourceFactory(query ?: "")
         sourceFactory.toLiveData(pageSize = DEFAULT_PAGE_SIZE)
     }
-    val networkState = Transformations.switchMap(repositories) { (it.dataSource as RepositoryDataSource).networkState }
+    val loadingState = Transformations.switchMap(repositories) { (it.dataSource as RepositoryDataSource).networkState }
 
 
 }

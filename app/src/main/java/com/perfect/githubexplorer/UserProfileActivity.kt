@@ -37,24 +37,25 @@ class UserProfileActivity : AppCompatActivity() {
             initAdapter(viewModel.user.value!!)
         })
 
-        viewModel.username.postValue(intent.getStringExtra("username"))
+        viewModel.username.postValue(intent.getStringExtra(EXTRA_USERNAME))
     }
 
     private fun initAdapter(user: User) {
         adapter = ProfileAdapter(
             Glide.with(this),
             listOf(
-                Pair("Email", user.email?:""),
-                Pair("", ""),
-                Pair("", ""),
-                Pair("", ""),
-                Pair("", "")
+                Pair(getString(R.string.username), user.username),
+                Pair(getString(R.string.email), user.email ?: getString(R.string.not_available)),
+                Pair(getString(R.string.company), user.company ?: getString(R.string.not_available)),
+                Pair(getString(R.string.location), user.location ?: getString(R.string.not_available)),
+                Pair(getString(R.string.bio), user.bio ?: getString(R.string.not_available)),
+                Pair(getString(R.string.followers), user.followers?.toString() ?: getString(R.string.not_available))
             )
         )
 
         adapter.onRepositorySelected = {
             startActivity<RepositoryActivity>(
-                "id" to it
+                RepositoryActivity.EXTRA_ID to it
             )
         }
 
@@ -64,12 +65,16 @@ class UserProfileActivity : AppCompatActivity() {
             adapter.submitList(it)
         })
 
-        viewModel.networkState.observe(this, Observer {
+        viewModel.loadingStatus.observe(this, Observer {
             adapter.setNetworkState(it)
         })
         list.layoutManager = LinearLayoutManager(this)
     }
 
     override fun onOptionsItemSelected(item: MenuItem) = finish().run { true }
+
+    companion object {
+        const val EXTRA_USERNAME = "username"
+    }
 
 }

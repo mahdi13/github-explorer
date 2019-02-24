@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.RequestManager
 import com.perfect.githubexplorer.R
-import com.perfect.githubexplorer.data.NetworkState
+import com.perfect.githubexplorer.data.LoadingStatus
 import com.perfect.githubexplorer.data.Repository
 
 
@@ -16,7 +16,7 @@ class ProfileAdapter(
 ) :
     PagedListAdapter<Repository, RecyclerView.ViewHolder>(POST_COMPARATOR) {
 
-    private var networkState: NetworkState? = null
+    private var loadingStatus: LoadingStatus? = null
 
     var onRepositorySelected: ((Int) -> Unit)? = null
 
@@ -25,7 +25,7 @@ class ProfileAdapter(
         when (getItemViewType(position)) {
             R.layout.user_data_row -> (holder as UserDataViewHolder).bindTo(userDataList[position])
             R.layout.repository_row -> (holder as RepositoryViewHolder).bindTo(getItem(position))
-            R.layout.network_state_row -> (holder as NetworkStateViewHolder).bindTo(networkState)
+            R.layout.network_state_row -> (holder as NetworkStateViewHolder).bindTo(loadingStatus)
         }
     }
 
@@ -49,12 +49,12 @@ class ProfileAdapter(
 
     override fun getItemCount(): Int = super.getItemCount() + userDataList.size + if (hasExtraRow()) 1 else 0
 
-    private fun hasExtraRow() = networkState != null && networkState != NetworkState.LOADED
+    private fun hasExtraRow() = loadingStatus != null && loadingStatus != LoadingStatus.LOADED
 
-    fun setNetworkState(newNetworkState: NetworkState?) {
-        val previousState = this.networkState
+    fun setNetworkState(newLoadingStatus: LoadingStatus?) {
+        val previousState = this.loadingStatus
         val hadExtraRow = hasExtraRow()
-        this.networkState = newNetworkState
+        this.loadingStatus = newLoadingStatus
         val hasExtraRow = hasExtraRow()
         if (hadExtraRow != hasExtraRow) {
             if (hadExtraRow) {
@@ -62,7 +62,7 @@ class ProfileAdapter(
             } else {
                 notifyItemInserted(super.getItemCount())
             }
-        } else if (hasExtraRow && previousState != newNetworkState) {
+        } else if (hasExtraRow && previousState != newLoadingStatus) {
             notifyItemChanged(itemCount - 1)
         }
     }
