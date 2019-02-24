@@ -19,13 +19,13 @@ data class User(
 
 data class Repository(
     val id: Int,
-    @SerializedName("name") val name: String,
-    @SerializedName("full_name") val fullName: String,
-    @SerializedName("forks") val forks: Int?,
-    @SerializedName("open_issues") val openIssues: Int?,
-    @SerializedName("watchers") val watchers: Int?,
-    @SerializedName("default_branch") val defaultBranch: String?,
-    @SerializedName("stargazers_count") val stars: Int,
-    @SerializedName("language") val language: String?,
-    val owner: User
+    @SerializedName("name") val name: String = "",
+    @SerializedName("full_name") val fullName: String = "",
+    @SerializedName("forks") val forks: Int? = null,
+    @SerializedName("open_issues") val openIssues: Int? = null,
+    @SerializedName("watchers") val watchers: Int? = null,
+    @SerializedName("default_branch") val defaultBranch: String? = null,
+    @SerializedName("stargazers_count") val stars: Int = 0,
+    @SerializedName("language") val language: String? = null,
+    val owner: User? = null
 )

@@ -76,16 +76,16 @@ class RepositoryViewHolder(
         if (repository == null) return clear()
 
         nameView.text = repository.fullName
-        userView.text = repository.owner.username
-        starView.text = repository.owner.username
+        userView.text = repository.owner?.username
+        starView.text = repository.stars.toString()
 
         itemView.tag = repository.id
-        userView.tag = repository.owner.username
+        userView.tag = repository.owner?.username
 
         userView.chipIcon = null
 
         glide.clear(imageLoaderTarget)
-        imageLoaderTarget = glide.load(repository.owner.avatarUrl)
+        imageLoaderTarget = glide.load(repository.owner?.avatarUrl)
             .into(object : SimpleTarget<Drawable>() {
                 override fun onResourceReady(
                     resource: Drawable,

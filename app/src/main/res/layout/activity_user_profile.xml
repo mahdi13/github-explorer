@@ -13,7 +13,8 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/app_bar_height"
             android:fitsSystemWindows="true"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            >
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
                 android:id="@+id/toolbar_layout"
@@ -24,7 +25,9 @@
                 app:layout_scrollFlags="scroll|exitUntilCollapsed"
                 app:toolbarId="@+id/toolbar">
 
-            <View
+            <ImageView
+                    android:scaleType="centerCrop"
+                    android:id="@+id/toolbar_view"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:alpha="0.3"

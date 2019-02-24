@@ -1,5 +1,6 @@
 package com.perfect.githubexplorer
 
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
@@ -8,10 +9,10 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.SimpleTarget
 import com.perfect.githubexplorer.ui.ProfileAdapter
 import com.perfect.githubexplorer.ui.ProfileViewModel
 import com.perfect.githubexplorer.data.Repository
-import com.perfect.githubexplorer.data.User
 import kotlinx.android.synthetic.main.activity_user_profile.*
 import org.jetbrains.anko.startActivity
 
@@ -30,27 +31,38 @@ class UserProfileActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         viewModel.user.observe(this, Observer {
-            supportActionBar?.title = it?.username
+            toolbar_layout.title = it?.username
+            viewModel.userDataList.value = listOf(
+                Pair(getString(R.string.username), it?.username ?: getString(R.string.not_available)),
+                Pair(getString(R.string.email), it?.email ?: getString(R.string.not_available)),
+                Pair(getString(R.string.company), it?.company ?: getString(R.string.not_available)),
+                Pair(getString(R.string.location), it?.location ?: getString(R.string.not_available)),
+                Pair(getString(R.string.bio), it?.bio ?: getString(R.string.not_available)),
+                Pair(getString(R.string.followers), it?.followers?.toString() ?: getString(R.string.not_available))
+            )
+            Glide.with(this).load(it?.avatarUrl)
+                .into(object : SimpleTarget<Drawable>() {
+                    override fun onResourceReady(
+                        resource: Drawable,
+                        transition: com.bumptech.glide.request.transition.Transition<in Drawable>?
+                    ) {
+                        toolbar_view.setImageDrawable(resource)
+                    }
+
+                })
         })
 
         viewModel.repositories.observe(this, Observer {
-            initAdapter(viewModel.user.value!!)
+            initAdapter()
         })
 
         viewModel.username.postValue(intent.getStringExtra(EXTRA_USERNAME))
     }
 
-    private fun initAdapter(user: User) {
+    private fun initAdapter() {
         adapter = ProfileAdapter(
             Glide.with(this),
-            listOf(
-                Pair(getString(R.string.username), user.username),
-                Pair(getString(R.string.email), user.email ?: getString(R.string.not_available)),
-                Pair(getString(R.string.company), user.company ?: getString(R.string.not_available)),
-                Pair(getString(R.string.location), user.location ?: getString(R.string.not_available)),
-                Pair(getString(R.string.bio), user.bio ?: getString(R.string.not_available)),
-                Pair(getString(R.string.followers), user.followers?.toString() ?: getString(R.string.not_available))
-            )
+            viewModel.userDataList.value!!
         )
 
         adapter.onRepositorySelected = {

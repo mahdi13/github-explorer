@@ -3,6 +3,7 @@ package com.perfect.githubexplorer.ui
 import androidx.lifecycle.*
 import androidx.paging.PagedList
 import androidx.paging.toLiveData
+import com.perfect.githubexplorer.R
 import com.perfect.githubexplorer.data.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -27,12 +28,14 @@ class ProfileViewModel : ViewModel() {
         }
     }
 
+    val userDataList: MutableLiveData<List<Pair<String, String>>> = MutableLiveData()
+
     val loadingStatus: MutableLiveData<LoadingStatus> = MutableLiveData()
 
     val repositories: LiveData<PagedList<Repository>> = Transformations.switchMap(user) { newUser ->
         if (newUser == null) return@switchMap null
 
-        val sourceFactory = RepositoryDataSourceFactory(null, newUser.username)
+        val sourceFactory = RepositoryDataSourceFactory(null, newUser.username, userDataList.value?.size!!)
         sourceFactory.toLiveData(pageSize = DEFAULT_PAGE_SIZE)
     }
 

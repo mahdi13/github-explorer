@@ -20,7 +20,6 @@ class ProfileAdapter(
 
     var onRepositorySelected: ((Int) -> Unit)? = null
 
-
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (getItemViewType(position)) {
             R.layout.user_data_row -> (holder as UserDataViewHolder).bindTo(userDataList[position])
@@ -46,8 +45,7 @@ class ProfileAdapter(
             else -> RepositoryViewHolder(glide, onRepositorySelected, null, parent)
         }
 
-
-    override fun getItemCount(): Int = super.getItemCount() + userDataList.size + if (hasExtraRow()) 1 else 0
+    override fun getItemCount(): Int = super.getItemCount() + if (hasExtraRow()) 1 else 0
 
     private fun hasExtraRow() = loadingStatus != null && loadingStatus != LoadingStatus.LOADED
 
