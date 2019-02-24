@@ -32,7 +32,8 @@
                         android:layout_margin="10dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Repository Name"/>
+                        android:text="Repository Name"
+                        android:maxLength="30"/>
 
 
                 <com.google.android.material.chip.Chip

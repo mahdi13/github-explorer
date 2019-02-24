@@ -10,7 +10,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
 import com.bumptech.glide.request.target.SimpleTarget
 import com.bumptech.glide.request.target.Target
-import com.perfect.githubexplorer.data.RepositoryViewModel
+import com.perfect.githubexplorer.ui.RepositoryViewModel
 import kotlinx.android.synthetic.main.activity_repository.*
 import org.jetbrains.anko.startActivity
 

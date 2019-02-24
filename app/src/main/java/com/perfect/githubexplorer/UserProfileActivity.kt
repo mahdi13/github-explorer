@@ -7,8 +7,9 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.perfect.githubexplorer.adapter.ProfileAdapter
-import com.perfect.githubexplorer.data.ProfileViewModel
+import com.bumptech.glide.Glide
+import com.perfect.githubexplorer.ui.ProfileAdapter
+import com.perfect.githubexplorer.ui.ProfileViewModel
 import com.perfect.githubexplorer.data.Repository
 import com.perfect.githubexplorer.data.User
 import kotlinx.android.synthetic.main.activity_user_profile.*
@@ -40,9 +41,16 @@ class UserProfileActivity : AppCompatActivity() {
     }
 
     private fun initAdapter(user: User) {
-        adapter = ProfileAdapter(user) {
-            //            viewModel.retry()
-        }
+        adapter = ProfileAdapter(
+            Glide.with(this),
+            listOf(
+                Pair("Email", user.email?:""),
+                Pair("", ""),
+                Pair("", ""),
+                Pair("", ""),
+                Pair("", "")
+            )
+        )
 
         adapter.onRepositorySelected = {
             startActivity<RepositoryActivity>(

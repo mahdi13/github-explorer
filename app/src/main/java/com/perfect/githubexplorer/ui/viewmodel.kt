@@ -1,9 +1,9 @@
-package com.perfect.githubexplorer.data
+package com.perfect.githubexplorer.ui
 
 import androidx.lifecycle.*
-import androidx.lifecycle.Transformations.switchMap
 import androidx.paging.PagedList
 import androidx.paging.toLiveData
+import com.perfect.githubexplorer.data.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

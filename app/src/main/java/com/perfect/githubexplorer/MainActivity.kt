@@ -9,7 +9,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.perfect.githubexplorer.adapter.RepositoryAdapter
+import com.perfect.githubexplorer.ui.RepositoryAdapter
 import com.perfect.githubexplorer.data.Repository
 import kotlinx.android.synthetic.main.activity_main.*
 import android.widget.AutoCompleteTextView
@@ -17,7 +17,7 @@ import androidx.appcompat.widget.SearchView
 import com.bumptech.glide.Glide
 import org.jetbrains.anko.startActivity
 import android.util.DisplayMetrics
-import com.perfect.githubexplorer.data.SearchViewModel
+import com.perfect.githubexplorer.ui.SearchViewModel
 
 
 class MainActivity : AppCompatActivity() {
@@ -39,9 +39,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initAdapter() {
-        adapter = RepositoryAdapter(Glide.with(this)) {
-            //            viewModel.retry()
-        }
+        adapter = RepositoryAdapter(Glide.with(this))
 
         adapter.onRepositorySelected = {
             startActivity<RepositoryActivity>(
