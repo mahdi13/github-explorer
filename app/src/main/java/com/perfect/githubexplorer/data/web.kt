@@ -5,13 +5,14 @@ import com.google.gson.annotations.SerializedName
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import com.perfect.githubexplorer.R
 import kotlinx.coroutines.Deferred
+import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
 
-const val GITHUB_BASE_API_URL = "https://api.github.com"
+val GITHUB_BASE_API_URL = "https://api.github.com"
 const val GITHUB_MARKDOWN_URL = "https://raw.githubusercontent.com/%s/%s/README.md"
 const val DEFAULT_PAGE_SIZE = 20
 
@@ -63,9 +64,14 @@ enum class LoadingStatus {
         }
 }
 
-var apiClient: GithubApiInterface = Retrofit.Builder()
-    .baseUrl(GITHUB_BASE_API_URL)
-    .addCallAdapterFactory(CoroutineCallAdapterFactory())
-    .addConverterFactory(GsonConverterFactory.create())
-    .build()
-    .create(GithubApiInterface::class.java)
+val apiRetrofit by lazy {
+    Retrofit.Builder()
+        .baseUrl(GITHUB_BASE_API_URL)
+        .addCallAdapterFactory(CoroutineCallAdapterFactory())
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+}
+
+val apiClient by lazy {
+    apiRetrofit.create(GithubApiInterface::class.java)!!
+}
