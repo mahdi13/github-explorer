@@ -917,13 +917,10 @@ const val RESPONSE_JSON = """{
 
 class WebApiUnitTest {
 
-    val mockServer: MockWebServer = MockWebServer()
+    private val mockServer: MockWebServer = MockWebServer()
 
     @Before
     fun mockApi() {
-        mockServer.enqueue(
-            MockResponse().setBody(RESPONSE_JSON)
-        )
         mockServer.start()
 
         mockkStatic("com.perfect.githubexplorer.data.WebKt")
@@ -952,10 +949,8 @@ class WebApiUnitTest {
 //    }
 
     @Test
-    fun test(): Unit {
-        assertEquals(4, 2 + 2)
-
-        Dispatchers.IO
+    fun test() {
+        mockServer.enqueue(MockResponse().setBody(RESPONSE_JSON))
 
         val a: SearchRepositoryResponse?
         a = runBlocking {
@@ -967,6 +962,6 @@ class WebApiUnitTest {
 
     @After
     fun apiShutdown() {
-        mockServer.shutdown();
+        mockServer.shutdown()
     }
 }
