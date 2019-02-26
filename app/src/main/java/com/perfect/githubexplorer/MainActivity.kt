@@ -17,7 +17,7 @@ import androidx.appcompat.widget.SearchView
 import com.bumptech.glide.Glide
 import org.jetbrains.anko.startActivity
 import android.util.DisplayMetrics
-import com.perfect.githubexplorer.ui.SearchViewModel
+import com.perfect.githubexplorer.data.SearchViewModel
 
 
 class MainActivity : AppCompatActivity() {

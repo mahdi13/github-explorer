@@ -24,6 +24,9 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
 }
 
 repositories {
@@ -80,6 +83,9 @@ dependencies {
 
     testImplementation 'junit:junit:4.12'
     testImplementation "io.mockk:mockk:1.9.1"
+    testImplementation 'androidx.test:core:1.1.0'
+    testImplementation "androidx.arch.core:core-testing:2.0.0"
+    testImplementation "androidx.test:runner:1.1.1"
 
 //    androidTestImplementation 'androidx.test:runner:1.1.2-alpha01'
 //    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.2-alpha01'

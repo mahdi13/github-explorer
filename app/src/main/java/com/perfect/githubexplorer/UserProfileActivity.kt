@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.SimpleTarget
 import com.perfect.githubexplorer.ui.ProfileAdapter
-import com.perfect.githubexplorer.ui.ProfileViewModel
+import com.perfect.githubexplorer.data.ProfileViewModel
 import com.perfect.githubexplorer.data.Repository
 import kotlinx.android.synthetic.main.activity_user_profile.*
 import org.jetbrains.anko.startActivity

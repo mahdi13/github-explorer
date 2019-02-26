@@ -11,7 +11,7 @@ import com.bumptech.glide.RequestManager
 import com.bumptech.glide.request.target.SimpleTarget
 import com.bumptech.glide.request.target.Target
 import com.perfect.githubexplorer.data.GITHUB_MARKDOWN_URL
-import com.perfect.githubexplorer.ui.RepositoryViewModel
+import com.perfect.githubexplorer.data.RepositoryViewModel
 import kotlinx.android.synthetic.main.activity_repository.*
 import org.jetbrains.anko.startActivity
 

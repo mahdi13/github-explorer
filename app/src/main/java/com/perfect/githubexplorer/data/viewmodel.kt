@@ -1,9 +1,8 @@
-package com.perfect.githubexplorer.ui
+package com.perfect.githubexplorer.data
 
 import androidx.lifecycle.*
 import androidx.paging.PagedList
 import androidx.paging.toLiveData
-import com.perfect.githubexplorer.data.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -67,7 +66,6 @@ class SearchViewModel : ViewModel() {
         sourceFactory.toLiveData(pageSize = DEFAULT_PAGE_SIZE)
     }
     val loadingState = Transformations.switchMap(repositories) { (it.dataSource as RepositoryDataSource).networkState }
-
 
 }
 
