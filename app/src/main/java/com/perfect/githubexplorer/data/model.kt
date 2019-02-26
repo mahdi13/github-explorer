@@ -23,7 +23,6 @@ data class Repository(
     @SerializedName("full_name") val fullName: String = "",
     @SerializedName("forks") val forks: Int? = null,
     @SerializedName("open_issues") val openIssues: Int? = null,
-    @SerializedName("watchers") val watchers: Int? = null,
     @SerializedName("default_branch") val defaultBranch: String? = null,
     @SerializedName("stargazers_count") val stars: Int = 0,
     @SerializedName("language") val language: String? = null,

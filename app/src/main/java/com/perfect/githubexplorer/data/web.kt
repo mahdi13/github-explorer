@@ -73,5 +73,5 @@ val apiRetrofit by lazy {
 }
 
 val apiClient by lazy {
-    apiRetrofit.create(GithubApiInterface::class.java)!!
+    apiRetrofit.create(GithubApiInterface::class.java)
 }
