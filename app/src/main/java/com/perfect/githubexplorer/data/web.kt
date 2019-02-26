@@ -72,6 +72,7 @@ val apiRetrofit by lazy {
         .build()
 }
 
-val apiClient by lazy {
-    apiRetrofit.create(GithubApiInterface::class.java)
-}
+val lazyApiClient: Lazy<GithubApiInterface> = lazy {apiRetrofit.create(GithubApiInterface::class.java)}
+
+val apiClient: GithubApiInterface
+    get() = lazyApiClient.value

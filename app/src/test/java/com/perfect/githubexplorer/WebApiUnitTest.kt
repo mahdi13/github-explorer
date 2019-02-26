@@ -1,34 +1,29 @@
 package com.perfect.githubexplorer
 
+import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import com.perfect.githubexplorer.data.*
-import io.mockk.every
-import io.mockk.mockkStatic
+import io.mockk.*
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.MockResponse
 import okio.Buffer
 import org.junit.*
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import java.io.File
 
 
 class WebApiUnitTest {
 
     companion object {
-        private val mockServer: MockWebServer = MockWebServer()
+        lateinit var mockServer: MockWebServer
 
         @BeforeClass
         @JvmStatic
         fun mockApi() {
+            mockServer = MockWebServer()
             mockServer.start()
-
-            mockkStatic("com.perfect.githubexplorer.data.WebKt")
-            every {
-                Class.forName("com.perfect.githubexplorer.data.WebKt")
-                    .getMethod("getGITHUB_BASE_API_URL")
-                    .invoke(this)
-            } returns mockServer.url("/").toString()
-
         }
 
         @AfterClass
@@ -36,6 +31,21 @@ class WebApiUnitTest {
         fun apiShutdown() {
             mockServer.shutdown()
         }
+    }
+
+    @Before
+    fun setup() {
+        mockkObject(lazyApiClient)
+        every { apiClient } returns Retrofit.Builder()
+            .baseUrl(mockServer.url("/").toString())
+            .addCallAdapterFactory(CoroutineCallAdapterFactory())
+            .addConverterFactory(GsonConverterFactory.create())
+            .build().create(GithubApiInterface::class.java)
+    }
+
+    @After
+    fun after() {
+        unmockkAll()
     }
 
     @Test

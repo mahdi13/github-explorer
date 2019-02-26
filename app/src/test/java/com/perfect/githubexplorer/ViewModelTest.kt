@@ -3,43 +3,21 @@ package com.perfect.githubexplorer
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Observer
 import androidx.paging.PagedList
-import com.perfect.githubexplorer.data.LoadingStatus
-import com.perfect.githubexplorer.data.Repository
-import com.perfect.githubexplorer.data.SearchViewModel
+import com.perfect.githubexplorer.data.*
 import io.mockk.*
 import io.mockk.impl.annotations.RelaxedMockK
+import kotlinx.coroutines.Deferred
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okio.Buffer
 import org.junit.*
+import retrofit2.mock.BehaviorDelegate
+import retrofit2.mock.MockRetrofit
+import retrofit2.mock.NetworkBehavior
 
-import java.io.File
+import java.util.concurrent.TimeUnit
 
 class ViewModelTest {
-
-    companion object {
-        private val mockServer: MockWebServer = MockWebServer()
-
-        @BeforeClass
-        @JvmStatic
-        fun mockApi() {
-            mockServer.start()
-
-            mockkStatic("com.perfect.githubexplorer.data.WebKt")
-            every {
-                Class.forName("com.perfect.githubexplorer.data.WebKt")
-                    .getMethod("getGITHUB_BASE_API_URL")
-                    .invoke(this)
-            } returns mockServer.url("/").toString()
-
-        }
-
-        @AfterClass
-        @JvmStatic
-        fun apiShutdown() {
-            mockServer.shutdown()
-        }
-    }
 
     @get:Rule
     val instantTaskRule = InstantTaskExecutorRule()
@@ -56,68 +34,76 @@ class ViewModelTest {
     fun setup() {
         MockKAnnotations.init(this)
         viewModel = SearchViewModel()
+
+        val behavior = NetworkBehavior.create()
+        behavior.setDelay(100.toLong(), TimeUnit.MILLISECONDS)
+        val mockRetrofit = MockRetrofit.Builder(apiRetrofit)
+            .networkBehavior(behavior)
+            .build()
+
+        val delegate = mockRetrofit.create(GithubApiInterface::class.java)
+        val mockApiClient = MockGitHub(delegate)
+
+        mockkObject(lazyApiClient)
+        every { lazyApiClient.value } returns mockApiClient
+
+    }
+
+    @After
+    fun after() {
+        unmockkAll()
+    }
+
+    class MockGitHub(private val delegate: BehaviorDelegate<GithubApiInterface>) : GithubApiInterface {
+        override fun searchRepositories(query: String, page: Int, pageSize: Int): Deferred<SearchRepositoryResponse> =
+            delegate.returningResponse(
+                SearchRepositoryResponse(
+                    mutableListOf<Repository>().apply { repeat(pageSize) { add(Repository(it)) } }, pageSize, false
+                )
+            ).searchRepositories(query, page, page)
+
+        override fun userProfile(username: String): Deferred<User> = throw NotImplementedError()
+
+        override fun userRepositories(username: String, page: Int, pageSize: Int): Deferred<List<Repository>> =
+            throw NotImplementedError()
+
+        override fun repositoryDetail(id: Int): Deferred<Repository> = throw NotImplementedError()
     }
 
     @Test
     fun testSearchViewModel() {
-        //    fun mockApi() {
-//        val behavior = NetworkBehavior.create()
-//        behavior.setDelay(3.toLong(), TimeUnit.SECONDS)
-//        val mockRetrofit = MockRetrofit.Builder(apiRetrofit)
-//            .networkBehavior(behavior)
-//            .build()
-//
-//        val delegate = mockRetrofit.create(GithubApiInterface::class.java)
-//        val mockApiClient = MockGitHub(delegate)
-//
-//
-//        mockkObject(apiRetrofit)
-//
-//        every { apiRetrofit.create(GithubApiInterface::class.java) } returns mockApiClient
-//
-//    }
-
-        repeat(3) { i ->
-            val path = "github-search-mockq-p${i + 1}.json"
-            mockServer.enqueue(
-                MockResponse().setBody(
-                    Buffer().readFrom(
-                        File(Thread.currentThread().contextClassLoader.getResource(path).path).inputStream()
-                    )
-                )
-            )
-        }
 
         viewModel.loadingState.observeForever(loadingStateObserver)
         viewModel.repositories.observeForever(repositoriesObserver)
         viewModel.query.value = "mockq"
 
-        Thread.sleep(1000)
+        // Loading the first 3 pages
+        Thread.sleep(200)
         verify {
             repositoriesObserver.onChanged(match {
-                it.loadedCount == 10
+                it.loadedCount == DEFAULT_PAGE_SIZE * 3
             })
         }
 
+        // Try to load the last loaded item
+        viewModel.repositories.value!!.loadAround(DEFAULT_PAGE_SIZE * 3 - 1)
+        Thread.sleep(200)
 
-        viewModel.repositories.value!!.loadAround(9)
-        Thread.sleep(1000)
-        viewModel.repositories.value!!.loadAround(19)
-        Thread.sleep(1000)
+        // Load 4th page
+        verify {
+            repositoriesObserver.onChanged(match {
+                it.loadedCount == DEFAULT_PAGE_SIZE * 4
+            })
+        }
 
         verifyOrder {
+            // First 3 pages
             loadingStateObserver.onChanged(LoadingStatus.LOADING)
             loadingStateObserver.onChanged(LoadingStatus.LOADED)
-            loadingStateObserver.onChanged(LoadingStatus.LOADING)
-            loadingStateObserver.onChanged(LoadingStatus.LOADED)
-            loadingStateObserver.onChanged(LoadingStatus.LOADING)
-            loadingStateObserver.onChanged(LoadingStatus.LOADED)
-        }
 
-        verify {
-            repositoriesObserver.onChanged(match {
-                it.loadedCount == 26
-            })
+            // 4th page
+            loadingStateObserver.onChanged(LoadingStatus.LOADING)
+            loadingStateObserver.onChanged(LoadingStatus.LOADED)
         }
 
     }
