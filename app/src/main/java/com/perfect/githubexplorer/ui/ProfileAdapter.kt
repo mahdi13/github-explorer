@@ -12,7 +12,7 @@ import com.perfect.githubexplorer.data.Repository
 
 class ProfileAdapter(
     private val glide: RequestManager,
-    private val userDataList: List<Pair<String, String>>
+    private val userDataList: List<Pair<String, String>> = emptyList()
 ) :
     PagedListAdapter<Repository, RecyclerView.ViewHolder>(POST_COMPARATOR) {
 

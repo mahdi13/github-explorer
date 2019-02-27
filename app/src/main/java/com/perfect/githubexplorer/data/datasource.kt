@@ -9,40 +9,43 @@ import kotlinx.coroutines.launch
 import java.lang.Exception
 
 class RepositoryDataSourceFactory(
+    private val networkState : MutableLiveData<LoadingStatus>,
     private val query: String?,
-    private val username: String? = null,
-    private val firstNullsOffset: Int = 0
+    private val username: String? = null
 ) :
     DataSource.Factory<Int, Repository>() {
 
     private val sourceLiveData = MutableLiveData<RepositoryDataSource>()
 
     override fun create(): DataSource<Int, Repository> {
-        val source = RepositoryDataSource(query, username, firstNullsOffset)
+        val source = RepositoryDataSource(networkState, query, username)
         sourceLiveData.postValue(source)
         return source
     }
 }
 
-class RepositoryDataSource(var query: String?, var username: String?, private val firstNullsOffset: Int) :
+private class RepositoryDataSource(
+    val networkState: MutableLiveData<LoadingStatus>,
+    var query: String?,
+    var username: String?
+) :
     PageKeyedDataSource<Int, Repository>() {
 
-    val networkState = MutableLiveData<LoadingStatus>()
 
-    private val scope = CoroutineScope(Dispatchers.Default)
+    private val scope = CoroutineScope(Dispatchers.IO)
 
     override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, Repository?>) =
         loadAfter(
             params = LoadParams(0, params.requestedLoadSize), callback = object : LoadCallback<Int, Repository>() {
                 override fun onResult(data: MutableList<Repository?>, adjacentPageKey: Int?) {
-                    data += mutableListOf<Repository?>().apply {
-                        repeat(firstNullsOffset) {
-                            add(
-                                0,
-                                Repository(it.unaryMinus())
-                            )
-                        }
-                    }
+//                    data += mutableListOf<Repository?>().apply {
+//                        repeat(firstNullsOffset) {
+//                            add(
+//                                0,
+//                                Repository(it.unaryMinus())
+//                            )
+//                        }
+//                    }
                     callback.onResult(data, null, 1)
                 }
             }
@@ -75,7 +78,6 @@ class RepositoryDataSource(var query: String?, var username: String?, private va
                 )
             }
         }
-
 
     }
 

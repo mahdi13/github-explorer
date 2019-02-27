@@ -5,16 +5,16 @@ import com.google.gson.annotations.SerializedName
 data class User(
     @SerializedName("id") val id: Int,
     @SerializedName("login") val username: String,
-    @SerializedName("name") val name: String?,
-    @SerializedName("company") val company: String?,
-    @SerializedName("blog") val blog: String?,
-    @SerializedName("location") val location: String?,
-    @SerializedName("email") val email: String?,
-    @SerializedName("bio") val bio: String?,
-    @SerializedName("public_repos") val publicRepos: Int?,
-    @SerializedName("followers") val followers: Int?,
-    @SerializedName("following") val following: Int?,
-    @SerializedName("avatar_url") val avatarUrl: String
+    @SerializedName("name") val name: String? = null,
+    @SerializedName("company") val company: String? = null,
+    @SerializedName("blog") val blog: String? = null,
+    @SerializedName("location") val location: String? = null,
+    @SerializedName("email") val email: String? = null,
+    @SerializedName("bio") val bio: String? = null,
+    @SerializedName("public_repos") val publicRepos: Int? = null,
+    @SerializedName("followers") val followers: Int? = null,
+    @SerializedName("following") val following: Int? = null,
+    @SerializedName("avatar_url") val avatarUrl: String? = null
 )
 
 data class Repository(

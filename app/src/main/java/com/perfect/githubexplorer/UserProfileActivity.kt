@@ -32,14 +32,14 @@ class UserProfileActivity : AppCompatActivity() {
 
         viewModel.user.observe(this, Observer {
             toolbar_layout.title = it?.username
-            viewModel.userDataList.value = listOf(
-                Pair(getString(R.string.username), it?.username ?: getString(R.string.not_available)),
-                Pair(getString(R.string.email), it?.email ?: getString(R.string.not_available)),
-                Pair(getString(R.string.company), it?.company ?: getString(R.string.not_available)),
-                Pair(getString(R.string.location), it?.location ?: getString(R.string.not_available)),
-                Pair(getString(R.string.bio), it?.bio ?: getString(R.string.not_available)),
-                Pair(getString(R.string.followers), it?.followers?.toString() ?: getString(R.string.not_available))
-            )
+//            viewModel.userDataList.value = listOf(
+//                Pair(getString(R.string.username), it?.username ?: getString(R.string.not_available)),
+//                Pair(getString(R.string.email), it?.email ?: getString(R.string.not_available)),
+//                Pair(getString(R.string.company), it?.company ?: getString(R.string.not_available)),
+//                Pair(getString(R.string.location), it?.location ?: getString(R.string.not_available)),
+//                Pair(getString(R.string.bio), it?.bio ?: getString(R.string.not_available)),
+//                Pair(getString(R.string.followers), it?.followers?.toString() ?: getString(R.string.not_available))
+//            )
             Glide.with(this).load(it?.avatarUrl)
                 .into(object : SimpleTarget<Drawable>() {
                     override fun onResourceReady(
@@ -60,10 +60,7 @@ class UserProfileActivity : AppCompatActivity() {
     }
 
     private fun initAdapter() {
-        adapter = ProfileAdapter(
-            Glide.with(this),
-            viewModel.userDataList.value!!
-        )
+        adapter = ProfileAdapter(Glide.with(this))
 
         adapter.onRepositorySelected = {
             startActivity<RepositoryActivity>(

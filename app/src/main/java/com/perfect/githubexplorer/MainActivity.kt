@@ -59,7 +59,7 @@ class MainActivity : AppCompatActivity() {
             adapter.submitList(it)
         })
 
-        viewModel.loadingState.observe(this, Observer {
+        viewModel.loadingStatus.observe(this, Observer {
             adapter.setNetworkState(it)
         })
 
