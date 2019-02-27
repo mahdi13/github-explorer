@@ -14,7 +14,6 @@ import com.perfect.githubexplorer.data.GITHUB_MARKDOWN_URL
 import com.perfect.githubexplorer.data.RepositoryViewModel
 import kotlinx.android.synthetic.main.activity_repository.*
 import org.jetbrains.anko.startActivity
-import org.jetbrains.anko.toast
 
 class RepositoryActivity : AppCompatActivity() {
 
@@ -38,6 +37,7 @@ class RepositoryActivity : AppCompatActivity() {
             markdown_view.loadFromUrl(
                 GITHUB_MARKDOWN_URL.format(repository?.fullName, repository?.defaultBranch)
             )
+            markdown_view.
 
             name.text = repository?.name ?: getString(R.string.not_available)
             owner.text = repository?.owner?.username ?: getString(R.string.not_available)

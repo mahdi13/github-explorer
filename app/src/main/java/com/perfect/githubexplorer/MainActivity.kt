@@ -103,7 +103,7 @@ class MainActivity : AppCompatActivity() {
 
         searchView.maxWidth = DisplayMetrics().apply { windowManager.defaultDisplay.getMetrics(this) }.widthPixels / 2
         searchView.isIconified = false
-        if (viewModel.query.value == null) viewModel.query.value = "hello"
+        if (viewModel.query.value == null) viewModel.query.value = "HelloWorld"
 
     }
 
