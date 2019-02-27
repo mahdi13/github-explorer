@@ -39,7 +39,6 @@ class RepositoryAdapter(private val glide: RequestManager) :
         }
     }
 
-
     override fun getItemCount(): Int = super.getItemCount() + if (hasExtraRow()) 1 else 0
 
     private fun hasExtraRow() = loadingStatus != null && loadingStatus != LoadingStatus.LOADED

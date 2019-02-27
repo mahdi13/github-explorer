@@ -6,6 +6,7 @@ import androidx.paging.toLiveData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
 
 class ProfileViewModel : ViewModel() {
     val username: MutableLiveData<String?> = MutableLiveData()
@@ -15,11 +16,16 @@ class ProfileViewModel : ViewModel() {
             init {
                 newUsername?.let {
                     CoroutineScope(Dispatchers.Default).launch {
-                        postValue(
-                            apiClient.userProfile(
-                                newUsername
-                            ).await()
-                        )
+                        try {
+                            postValue(
+                                apiClient.userProfile(
+                                    newUsername
+                                ).await()
+                            )
+                        } catch (e: HttpException) {
+                            e.printStackTrace()
+                            postValue(null)
+                        }
                     }
                 }
             }
@@ -45,11 +51,17 @@ class RepositoryViewModel : ViewModel() {
             init {
                 newRepositoryId?.let {
                     CoroutineScope(Dispatchers.Default).launch {
-                        postValue(
-                            apiClient.repositoryDetail(
-                                newRepositoryId
-                            ).await()
-                        )
+                        try {
+                            postValue(
+                                apiClient.repositoryDetail(
+                                    newRepositoryId
+                                ).await()
+                            )
+                        } catch (e: HttpException) {
+                            e.printStackTrace()
+                            postValue(null)
+                        }
+
                     }
                 }
             }

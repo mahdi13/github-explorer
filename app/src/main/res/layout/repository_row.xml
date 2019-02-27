@@ -26,28 +26,29 @@
                     android:orientation="vertical">
 
                 <TextView
+                        android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
                         android:id="@+id/name"
                         android:textColor="#333333"
                         android:textStyle="bold"
                         android:layout_margin="10dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Repository Name"
                         android:maxLength="30"/>
 
 
                 <com.google.android.material.chip.Chip
+                        android:textAppearance="@style/TextAppearance.MaterialComponents.Chip"
                         android:id="@+id/user"
                         android:layout_marginStart="20dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        app:chipIcon="@drawable/ic_star_black_24dp"
-                        android:text="Username"/>
+                        app:chipIcon="@drawable/ic_star_black_24dp"/>
 
 
             </LinearLayout>
 
             <TextView
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
                     android:id="@+id/stars"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -56,8 +57,7 @@
                     android:drawableEnd="@drawable/ic_star_black_24dp"
                     android:drawableTint="#666666"
                     android:textColor="#666666"
-                    android:drawablePadding="5dp"
-                    android:text="stars"/>
+                    android:drawablePadding="5dp"/>
 
 
         </LinearLayout>

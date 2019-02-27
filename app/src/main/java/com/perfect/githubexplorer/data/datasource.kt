@@ -34,22 +34,51 @@ private class RepositoryDataSource(
 
     private val scope = CoroutineScope(Dispatchers.IO)
 
-    override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, Repository?>) =
-        loadAfter(
-            params = LoadParams(0, params.requestedLoadSize), callback = object : LoadCallback<Int, Repository>() {
-                override fun onResult(data: MutableList<Repository?>, adjacentPageKey: Int?) {
-//                    data += mutableListOf<Repository?>().apply {
-//                        repeat(firstNullsOffset) {
-//                            add(
-//                                0,
-//                                Repository(it.unaryMinus())
-//                            )
-//                        }
-//                    }
-                    callback.onResult(data, null, 1)
+    override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, Repository?>) {
+        networkState.postValue(LoadingStatus.LOADING)
+        scope.launch {
+            try {
+                val result = if (username != null) {
+                    apiClient.userRepositories(
+                        username = username!!,
+                        page = 0,
+                        pageSize = params.requestedLoadSize
+                    ).await()
+                } else {
+                    apiClient.searchRepositories(
+                        query = query!!,
+                        page = 0,
+                        pageSize = params.requestedLoadSize
+                    ).await().items
                 }
+
+                networkState.postValue(LoadingStatus.LOADED)
+                callback.onResult(result, null, 1)
+
+            } catch (e: Exception) {
+                networkState.postValue(
+                    LoadingStatus.FAILED
+                )
             }
-        )
+        }
+    }
+
+
+//        loadAfter(
+//            params = LoadParams(0, params.requestedLoadSize), callback = object : LoadCallback<Int, Repository>() {
+//                override fun onResult(data: MutableList<Repository?>, adjacentPageKey: Int?) {
+////                    data += mutableListOf<Repository?>().apply {
+////                        repeat(firstNullsOffset) {
+////                            add(
+////                                0,
+////                                Repository(it.unaryMinus())
+////                            )
+////                        }
+////                    }
+//                    callback.onResult(data, null, 1)
+//                }
+//            }
+//        )
 
     override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, Repository>) {
         networkState.postValue(LoadingStatus.LOADING)

@@ -14,6 +14,7 @@ import com.perfect.githubexplorer.data.GITHUB_MARKDOWN_URL
 import com.perfect.githubexplorer.data.RepositoryViewModel
 import kotlinx.android.synthetic.main.activity_repository.*
 import org.jetbrains.anko.startActivity
+import org.jetbrains.anko.toast
 
 class RepositoryActivity : AppCompatActivity() {
 
