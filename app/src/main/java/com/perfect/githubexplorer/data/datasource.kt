@@ -41,19 +41,19 @@ private class RepositoryDataSource(
                 val result = if (username != null) {
                     apiClient.userRepositories(
                         username = username!!,
-                        page = 0,
+                        page = 1,
                         pageSize = params.requestedLoadSize
                     ).await()
                 } else {
                     apiClient.searchRepositories(
                         query = query!!,
-                        page = 0,
+                        page = 1,
                         pageSize = params.requestedLoadSize
                     ).await().items
                 }
 
                 networkState.postValue(LoadingStatus.LOADED)
-                callback.onResult(result, null, 1)
+                callback.onResult(result, null, 2)
 
             } catch (e: Exception) {
                 networkState.postValue(
