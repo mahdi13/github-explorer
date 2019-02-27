@@ -34,7 +34,7 @@ import org.hamcrest.Matcher
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
-class MainActivityInstrumentedTest {
+class ActivityNavigationInstrumentedTest {
 
     @get:Rule
     var activityRule: IntentsTestRule<MainActivity> = IntentsTestRule(MainActivity::class.java)
