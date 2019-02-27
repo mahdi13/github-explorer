@@ -37,7 +37,6 @@ class RepositoryActivity : AppCompatActivity() {
             markdown_view.loadFromUrl(
                 GITHUB_MARKDOWN_URL.format(repository?.fullName, repository?.defaultBranch)
             )
-            markdown_view.
 
             name.text = repository?.name ?: getString(R.string.not_available)
             owner.text = repository?.owner?.username ?: getString(R.string.not_available)
