@@ -26,6 +26,9 @@ class ViewModelTest {
     lateinit var repositoriesObserver: Observer<PagedList<Repository>>
 
     @RelaxedMockK
+    lateinit var userRepositoriesObserver: Observer<PagedList<Any>>
+
+    @RelaxedMockK
     lateinit var userObserver: Observer<User?>
 
     @RelaxedMockK
@@ -125,7 +128,7 @@ class ViewModelTest {
         val profileViewModel = ProfileViewModel()
 
         profileViewModel.loadingStatus.observeForever(loadingStateObserver)
-        profileViewModel.repositories.observeForever(repositoriesObserver)
+        profileViewModel.repositories.observeForever(userRepositoriesObserver)
         profileViewModel.user.observeForever(userObserver)
 
         profileViewModel.username.value = "mock-username"
@@ -137,8 +140,6 @@ class ViewModelTest {
         }
         verifyOrder {
             loadingStateObserver.onChanged(LoadingStatus.LOADING)
-            // First 3 pages
-            repositoriesObserver.onChanged(match { it.loadedCount == 60 })
             loadingStateObserver.onChanged(LoadingStatus.LOADED)
         }
 
