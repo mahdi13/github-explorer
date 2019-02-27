@@ -69,18 +69,13 @@ class MainActivityInstrumentedTest {
                 RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(
                     3,
                     object : ViewAction {
-                        override fun getConstraints(): Matcher<View>? {
-                            return null
-                        }
-
-                        override fun getDescription(): String {
-                            return "Click on specific button"
-                        }
+                        override fun getDescription(): String? = null
+                        override fun getConstraints(): Matcher<View>? = null
 
                         override fun perform(uiController: UiController, view: View) {
-                            val button = view.findViewById<Chip>(R.id.user)
-                            button.performClick()
+                            view.findViewById<Chip>(R.id.user).performClick()
                         }
+
                     })
             )
 
