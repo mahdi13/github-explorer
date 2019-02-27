@@ -75,7 +75,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupSearchView(searchMenuItem: MenuItem) {
         searchView = searchMenuItem.actionView as SearchView
-        searchView.queryHint = getString(R.string.search_title) // your hint here
+        searchView.queryHint = getString(R.string.search_title)
 
         try {
             val autoCompleteTextViewID = resources.getIdentifier("android:id/search_src_text", null, null)

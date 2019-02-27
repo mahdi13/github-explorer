@@ -28,6 +28,9 @@ class ViewModelTest {
     @RelaxedMockK
     lateinit var userObserver: Observer<User?>
 
+    @RelaxedMockK
+    lateinit var repositoryObserver: Observer<Repository?>
+
     @Before
     fun setup() {
         MockKAnnotations.init(this)
@@ -65,16 +68,17 @@ class ViewModelTest {
 
         override fun userRepositories(username: String, page: Int, pageSize: Int): Deferred<List<Repository>> =
             delegate.returningResponse(
-                SearchRepositoryResponse(
-                    mutableListOf<Repository>().apply {
-                        repeat(pageSize) {
-                            add(Repository(it, owner = User(123456, "mock-username")))
-                        }
-                    }, pageSize, false
-                )
+                mutableListOf<Repository>().apply {
+                    repeat(pageSize) {
+                        add(Repository(it, owner = User(123456, "mock-username")))
+                    }
+                }
             ).userRepositories(username, page, pageSize)
 
-        override fun repositoryDetail(id: Int): Deferred<Repository> = throw NotImplementedError()
+        override fun repositoryDetail(id: Int): Deferred<Repository> = delegate.returningResponse(
+            Repository(54321, owner = User(123456, "mock-username"))
+        ).repositoryDetail(id)
+
     }
 
     @Test
@@ -126,28 +130,32 @@ class ViewModelTest {
 
         profileViewModel.username.value = "mock-username"
 
-        // Loading the first 3 pages
-        Thread.sleep(5000)
-//        verify {
-//            repositoriesObserver.onChanged(match {
-//                it.loadedCount == DEFAULT_PAGE_SIZE * 3
-//            })
-//        }
+        Thread.sleep(500)
 
-//        // Try to load the last loaded item
-//        searchViewModel.repositories.value!!.loadAround(DEFAULT_PAGE_SIZE * 3 - 1)
-//        Thread.sleep(200)
-//
-//        // Load 4th page
         verify {
             userObserver.onChanged(match { it.username == "mock-username" })
         }
-//
         verifyOrder {
-            // First 3 pages
             loadingStateObserver.onChanged(LoadingStatus.LOADING)
-//            repositoriesObserver.onChanged(match {it.loadedCount == 60})
-//            loadingStateObserver.onChanged(LoadingStatus.LOADED)
+            // First 3 pages
+            repositoriesObserver.onChanged(match { it.loadedCount == 60 })
+            loadingStateObserver.onChanged(LoadingStatus.LOADED)
+        }
+
+    }
+
+    @Test
+    fun testRepositoryViewModel() {
+        val repositoryViewModel = RepositoryViewModel()
+
+        repositoryViewModel.repository.observeForever(repositoryObserver)
+
+        repositoryViewModel.repositoryId.value = 54321
+
+        Thread.sleep(500)
+
+        verify {
+            repositoryObserver.onChanged(match { it.id == 54321 })
         }
 
     }
