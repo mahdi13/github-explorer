@@ -55,13 +55,6 @@ enum class LoadingStatus {
     LOADING,
     LOADED,
     FAILED;
-
-    fun toString(context: Context): String =
-        when (this) {
-            LoadingStatus.LOADING -> context.getString(R.string.loading_status)
-            LoadingStatus.LOADED -> context.getString(R.string.success_status)
-            LoadingStatus.FAILED -> context.getString(R.string.failed_status)
-        }
 }
 
 val apiRetrofit by lazy {
@@ -72,7 +65,7 @@ val apiRetrofit by lazy {
         .build()
 }
 
-val lazyApiClient: Lazy<GithubApiInterface> = lazy {apiRetrofit.create(GithubApiInterface::class.java)}
+val lazyApiClient: Lazy<GithubApiInterface> = lazy { apiRetrofit.create(GithubApiInterface::class.java) }
 
 val apiClient: GithubApiInterface
     get() = lazyApiClient.value

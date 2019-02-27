@@ -1,5 +1,6 @@
 package com.perfect.githubexplorer.ui
 
+import android.content.Context
 import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -104,3 +105,10 @@ class RepositoryViewHolder(
         starView.text = ""
     }
 }
+
+fun LoadingStatus.toString(context: Context): String =
+    when (this) {
+        LoadingStatus.LOADING -> context.getString(R.string.loading_status)
+        LoadingStatus.LOADED -> context.getString(R.string.success_status)
+        LoadingStatus.FAILED -> context.getString(R.string.failed_status)
+    }
