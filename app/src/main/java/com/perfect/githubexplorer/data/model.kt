@@ -15,7 +15,11 @@ data class User(
     @SerializedName("followers") val followers: Int? = null,
     @SerializedName("following") val following: Int? = null,
     @SerializedName("avatar_url") val avatarUrl: String? = null
-)
+) {
+    companion object {
+        const val RECORDS_TO_SHOW = 6
+    }
+}
 
 data class Repository(
     val id: Int,

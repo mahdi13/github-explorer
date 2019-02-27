@@ -1,5 +1,6 @@
 package com.perfect.githubexplorer.ui
 
+import android.content.Context
 import android.view.ViewGroup
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
@@ -9,40 +10,32 @@ import com.perfect.githubexplorer.R
 import com.perfect.githubexplorer.data.LoadingStatus
 import com.perfect.githubexplorer.data.Repository
 import com.perfect.githubexplorer.data.User
-import java.lang.Exception
-import java.lang.reflect.Executable
-import kotlin.math.max
-import kotlin.math.min
 
 
-class ProfileAdapter(
-    private val glide: RequestManager,
-    private val user: User?
-) :
-    PagedListAdapter<Repository, RecyclerView.ViewHolder>(POST_COMPARATOR) {
-
-    private val userDataList: List<Pair<Int, String?>> = listOf(
-        Pair(R.string.username, user?.username),
-        Pair(R.string.email, user?.email),
-        Pair(R.string.company, user?.company),
-        Pair(R.string.location, user?.location),
-        Pair(R.string.bio, user?.bio),
-        Pair(R.string.followers, user?.followers?.toString())
-    )
+class ProfileAdapter(private val glide: RequestManager, private val user: User?, context: Context) :
+    PagedListAdapter<Any, RecyclerView.ViewHolder>(POST_COMPARATOR) {
 
     private var loadingStatus: LoadingStatus? = null
 
     var onRepositorySelected: ((Int) -> Unit)? = null
 
+    private val userRecords: List<Pair<String, String>> = listOf(
+        Pair(context.getString(R.string.username), user?.username ?: context.getString(R.string.not_available)),
+        Pair(context.getString(R.string.email), user?.email ?: context.getString(R.string.not_available)),
+        Pair(context.getString(R.string.company), user?.company ?: context.getString(R.string.not_available)),
+        Pair(context.getString(R.string.location), user?.location ?: context.getString(R.string.not_available)),
+        Pair(context.getString(R.string.bio), user?.bio ?: context.getString(R.string.not_available)),
+        Pair(
+            context.getString(R.string.followers),
+            user?.followers?.toString() ?: context.getString(R.string.not_available)
+        )
+    )
+
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (getItemViewType(position)) {
-            R.layout.user_data_row -> (holder as UserDataViewHolder).bindTo(
-                Pair(
-                    holder.itemView.resources.getString(userDataList[position].first),
-                    userDataList[position].second ?: holder.itemView.resources.getString(R.string.not_available)
-                )
-            )
-            R.layout.repository_row -> (holder as RepositoryViewHolder).bindTo(this.currentList!![position - userDataList.size])
+            R.layout.user_data_row -> (holder as UserDataViewHolder)
+                .bindTo(userRecords[position])
+            R.layout.repository_row -> (holder as RepositoryViewHolder).bindTo(this.getItem(position) as Repository)
             R.layout.network_state_row -> (holder as NetworkStateViewHolder).bindTo(loadingStatus)
         }
     }
@@ -50,10 +43,10 @@ class ProfileAdapter(
     override fun getItemViewType(position: Int): Int {
         return if (hasExtraRow() && position == itemCount - 1) {
             R.layout.network_state_row
-        } else if (position < userDataList.size) {
-            R.layout.user_data_row
-        } else {
+        } else if (getItem(position) is Repository) {
             R.layout.repository_row
+        } else {
+            R.layout.user_data_row
         }
     }
 
@@ -64,7 +57,7 @@ class ProfileAdapter(
             else -> RepositoryViewHolder(glide, onRepositorySelected, null, parent)
         }
 
-    override fun getItemCount(): Int = super.getItemCount() + if (hasExtraRow()) 1 else 0 + userDataList.size
+    override fun getItemCount(): Int = super.getItemCount() + (if (hasExtraRow()) 1 else 0)
 
     private fun hasExtraRow() = loadingStatus != null && loadingStatus != LoadingStatus.LOADED
 
@@ -85,17 +78,15 @@ class ProfileAdapter(
     }
 
     companion object {
-        val POST_COMPARATOR = object : DiffUtil.ItemCallback<Repository>() {
-            override fun areContentsTheSame(oldItem: Repository, newItem: Repository): Boolean =
-                oldItem == newItem
+        val POST_COMPARATOR = object : DiffUtil.ItemCallback<Any>() {
+            override fun areContentsTheSame(oldItem: Any, newItem: Any): Boolean =
+                oldItem as Repository == newItem as Repository
 
-            override fun areItemsTheSame(oldItem: Repository, newItem: Repository): Boolean =
-                oldItem.id == newItem.id
+            override fun areItemsTheSame(oldItem: Any, newItem: Any): Boolean =
+                (oldItem as Repository).id == (newItem as Repository).id
 
         }
 
     }
 
 }
-
-

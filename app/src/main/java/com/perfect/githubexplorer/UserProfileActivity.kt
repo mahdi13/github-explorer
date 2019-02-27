@@ -54,7 +54,7 @@ class UserProfileActivity : AppCompatActivity() {
     }
 
     private fun initAdapter() {
-        adapter = ProfileAdapter(Glide.with(this), viewModel.user.value)
+        adapter = ProfileAdapter(Glide.with(this), viewModel.user.value, this)
 
         adapter.onRepositorySelected = {
             startActivity<RepositoryActivity>(
@@ -64,7 +64,7 @@ class UserProfileActivity : AppCompatActivity() {
 
         list.adapter = adapter
 
-        viewModel.repositories.observe(this, Observer<PagedList<Repository>> {
+        viewModel.repositories.observe(this, Observer<PagedList<Any>> {
             adapter.submitList(it)
         })
 

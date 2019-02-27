@@ -33,10 +33,10 @@ class ProfileViewModel : ViewModel() {
     }
 
 
-    val repositories: LiveData<PagedList<Repository>> = Transformations.switchMap(user) { newUser ->
+    val repositories: LiveData<PagedList<Any>> = Transformations.switchMap(user) { newUser ->
         if (newUser == null) return@switchMap null
 
-        val sourceFactory = RepositoryDataSourceFactory(loadingStatus, null, newUser.username)
+        val sourceFactory = UserRepositoryDataSourceFactory(loadingStatus, newUser.username)
         sourceFactory.toLiveData(pageSize = DEFAULT_PAGE_SIZE)
     }
     val loadingStatus: MutableLiveData<LoadingStatus> = MutableLiveData()
